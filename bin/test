@@ -1,0 +1,5 @@
+#!/usr/bin/env bash
+
+set -euo pipefail
+
+ginkgo -r -cover -race -randomizeAllSpecs -p -requireSuite

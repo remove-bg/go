@@ -1,0 +1,8 @@
+#!/usr/bin/env bash
+
+set -euo pipefail
+
+dep ensure
+
+go get -u github.com/onsi/ginkgo/ginkgo
+go get -u github.com/onsi/gomega/...
