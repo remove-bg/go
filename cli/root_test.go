@@ -7,7 +7,7 @@ import (
 	. "github.com/remove-bg/go/cli"
 )
 
-var _ = Describe("root", func() {
+var _ = Describe("CLI", func() {
 	It("has a version", func() {
 		app := Bootstrap()
 		Expect(app.Version).To(MatchRegexp(`\d+\.\d+\.\d+`))
