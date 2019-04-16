@@ -2,3 +2,4 @@ vendor
 *.coverprofile
 .idea
 tmp
+removebg

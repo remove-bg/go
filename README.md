@@ -17,3 +17,10 @@ cd $GOPATH/github.com/remove-bg/go
 bin/setup
 bin/test
 ```
+
+To build & try out locally:
+
+```
+go build -o removebg main.go
+./removebg --help
+```
