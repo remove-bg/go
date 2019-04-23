@@ -33,16 +33,14 @@ func (c Client) RemoveFromFile(inputPath string, apiKey string, params map[strin
 	resp, err := c.HTTPClient.Do(request)
 
 	if err != nil {
-		log.Fatal(err)
 		return nil, err
 	}
 
 	defer resp.Body.Close()
 
 	if resp.StatusCode != 200 {
-		fmt.Println(resp.StatusCode)
-		fmt.Println(resp.Header)
-		return nil, errors.New("unable to process image")
+		errorMsg := fmt.Sprintf("Unable to process image http_status=%d file=%s", resp.StatusCode, inputPath)
+		return nil, errors.New(errorMsg)
 	}
 
 	return ioutil.ReadAll(resp.Body)

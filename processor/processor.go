@@ -36,14 +36,14 @@ func (p Processor) processFile(inputPath string, outputPath string, imageSetting
 	processedBytes, err := p.Client.RemoveFromFile(inputPath, p.APIKey, params)
 
 	if err != nil {
-		log.Fatal(err)
+		log.Print(err)
 		return
 	}
 
 	err = p.FileWriter.Write(outputPath, processedBytes)
 
 	if err != nil {
-		log.Fatal(err)
+		log.Print(err)
 		return
 	}
 }
