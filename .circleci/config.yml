@@ -1,0 +1,27 @@
+version: 2
+
+jobs:
+  build:
+    docker:
+      - image: circleci/golang:1.12
+    working_directory: /home/circleci/go/src/github.com/remove-bg/go
+    environment:
+      GOPATH: /home/circleci/go
+    steps:
+      - checkout
+      - run: echo 'export PATH=$GOPATH/bin:$PATH' >> "$BASH_ENV"
+      - restore_cache:
+          keys:
+            - vendor-{{ checksum "Gopkg.lock" }}
+      - run: bin/setup
+      - run: bin/test
+      - save_cache:
+          key: vendor-{{ checksum "Gopkg.lock" }}
+          paths:
+            - vendor
+
+workflows:
+  version: 2.1
+  build-workflow:
+    jobs:
+      - build
