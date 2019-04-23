@@ -3,9 +3,6 @@ package processor
 import (
 	"github.com/remove-bg/go/client"
 	"log"
-	"path"
-	"path/filepath"
-	"strings"
 )
 
 type Processor struct {
@@ -20,7 +17,7 @@ type Settings struct {
 
 func (p Processor) Process(inputPaths []string, settings Settings) {
 	for _, inputPath := range inputPaths {
-		outputPath := determineOutputPath(inputPath, settings.OutputDirectory)
+		outputPath := DetermineOutputPath(inputPath, settings)
 
 		p.processFile(inputPath, outputPath)
 	}
@@ -28,7 +25,6 @@ func (p Processor) Process(inputPaths []string, settings Settings) {
 
 func (p Processor) processFile(inputPath string, outputPath string) {
 	params := map[string]string{}
-
 	processedBytes, err := p.Client.RemoveFromFile(inputPath, p.APIKey, params)
 
 	if err != nil {
@@ -42,10 +38,4 @@ func (p Processor) processFile(inputPath string, outputPath string) {
 		log.Fatal(err)
 		return
 	}
-}
-
-func determineOutputPath(inputPath string, outputDirectory string) string {
-	_, fileName := filepath.Split(inputPath)
-	withoutExtension := strings.TrimSuffix(fileName, path.Ext(fileName))
-	return filepath.Join(outputDirectory, withoutExtension+".png")
 }

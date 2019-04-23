@@ -40,10 +40,6 @@ func Bootstrap() *cli.App {
 			return cli.NewExitError("Please specify one or more files", 1)
 		}
 
-		if len(outputDirectory) == 0 {
-			return cli.NewExitError("Please specify the output directory", 1)
-		}
-
 		p := processor.Processor{
 			APIKey: apiKey,
 			Client: client.Client{
