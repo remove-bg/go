@@ -52,7 +52,11 @@ func Bootstrap() *cli.App {
 			FileWriter: processor.FileWriter{},
 		}
 
-		p.Process(inputPaths, outputDirectory)
+		s := processor.Settings{
+			OutputDirectory: outputDirectory,
+		}
+
+		p.Process(inputPaths, s)
 
 		return nil
 	}

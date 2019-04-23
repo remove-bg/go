@@ -14,9 +14,13 @@ type Processor struct {
 	FileWriter fileWriterInterface
 }
 
-func (p Processor) Process(inputPaths []string, outputDirectory string) {
+type Settings struct {
+	OutputDirectory string
+}
+
+func (p Processor) Process(inputPaths []string, settings Settings) {
 	for _, inputPath := range inputPaths {
-		outputPath := determineOutputPath(inputPath, outputDirectory)
+		outputPath := determineOutputPath(inputPath, settings.OutputDirectory)
 
 		p.processFile(inputPath, outputPath)
 	}

@@ -30,8 +30,11 @@ var _ = Describe("Processor", func() {
 		}
 
 		inputPaths := []string{"dir/image1.jpg", "dir/image2.jpg"}
+		s := processor.Settings{
+			OutputDirectory: "output-dir",
+		}
 
-		subject.Process(inputPaths, "output-dir")
+		subject.Process(inputPaths, s)
 
 		Expect(fakeClient.RemoveFromFileCallCount()).To(Equal(2))
 
