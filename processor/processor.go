@@ -13,18 +13,26 @@ type Processor struct {
 
 type Settings struct {
 	OutputDirectory string
+	ImageSettings   ImageSettings
+}
+
+type ImageSettings struct {
+	Size     string
+	Type     string
+	Channels string
+	BgColor  string
 }
 
 func (p Processor) Process(inputPaths []string, settings Settings) {
 	for _, inputPath := range inputPaths {
 		outputPath := DetermineOutputPath(inputPath, settings)
 
-		p.processFile(inputPath, outputPath)
+		p.processFile(inputPath, outputPath, settings.ImageSettings)
 	}
 }
 
-func (p Processor) processFile(inputPath string, outputPath string) {
-	params := map[string]string{}
+func (p Processor) processFile(inputPath string, outputPath string, imageSettings ImageSettings) {
+	params := imageSettingsToParams(imageSettings)
 	processedBytes, err := p.Client.RemoveFromFile(inputPath, p.APIKey, params)
 
 	if err != nil {
@@ -38,4 +46,27 @@ func (p Processor) processFile(inputPath string, outputPath string) {
 		log.Fatal(err)
 		return
 	}
+}
+
+func imageSettingsToParams(imageSettings ImageSettings) map[string]string {
+	// TODO: Tidyup with reflection / struct tags?
+	params := map[string]string{}
+
+	if len(imageSettings.Size) > 0 {
+		params["size"] = imageSettings.Size
+	}
+
+	if len(imageSettings.Type) > 0 {
+		params["type"] = imageSettings.Type
+	}
+
+	if len(imageSettings.Channels) > 0 {
+		params["channels"] = imageSettings.Channels
+	}
+
+	if len(imageSettings.BgColor) > 0 {
+		params["bg_color"] = imageSettings.BgColor
+	}
+
+	return params
 }

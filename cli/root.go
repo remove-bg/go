@@ -25,6 +25,22 @@ func Bootstrap() *cli.App {
 			Name:  "output-directory",
 			Usage: "Output directory",
 		},
+		cli.StringFlag{
+			Name:  "size",
+			Usage: "Image size",
+		},
+		cli.StringFlag{
+			Name:  "type",
+			Usage: "Image type",
+		},
+		cli.StringFlag{
+			Name:  "channels",
+			Usage: "Image channels",
+		},
+		cli.StringFlag{
+			Name:  "bg-color",
+			Usage: "Image background color",
+		},
 	}
 
 	app.Action = func(c *cli.Context) error {
@@ -50,6 +66,12 @@ func Bootstrap() *cli.App {
 
 		s := processor.Settings{
 			OutputDirectory: outputDirectory,
+			ImageSettings: processor.ImageSettings{
+				Size:     c.String("size"),
+				Type:     c.String("type"),
+				Channels: c.String("channels"),
+				BgColor:  c.String("bg-color"),
+			},
 		}
 
 		p.Process(inputPaths, s)
