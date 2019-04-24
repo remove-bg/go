@@ -59,4 +59,17 @@ var _ = Describe("Client", func() {
 			Expect(err).To(MatchError(expectedError))
 		})
 	})
+
+	Context("input file doesn't exist", func() {
+		It("returns a clear error", func() {
+			nonExistentFile := "/tmp/not-a-file"
+			result, err := subject.RemoveFromFile(nonExistentFile, "api-key", map[string]string{})
+
+			Expect(result).To(BeNil())
+
+			expectedError := fmt.Sprintf("Unable to read image file=%s", nonExistentFile)
+
+			Expect(err).To(MatchError(expectedError))
+		})
+	})
 })

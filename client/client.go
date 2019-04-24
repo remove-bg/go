@@ -2,11 +2,9 @@ package client
 
 import (
 	"bytes"
-	"errors"
 	"fmt"
 	"io"
 	"io/ioutil"
-	"log"
 	"mime/multipart"
 	"net/http"
 	"os"
@@ -27,11 +25,10 @@ type Client struct {
 func (c Client) RemoveFromFile(inputPath string, apiKey string, params map[string]string) ([]byte, error) {
 	request, err := buildRequest(APIEndpoint, apiKey, params, inputPath)
 	if err != nil {
-		log.Fatal(err)
+		return nil, err
 	}
 
 	resp, err := c.HTTPClient.Do(request)
-
 	if err != nil {
 		return nil, err
 	}
@@ -39,8 +36,7 @@ func (c Client) RemoveFromFile(inputPath string, apiKey string, params map[strin
 	defer resp.Body.Close()
 
 	if resp.StatusCode != 200 {
-		errorMsg := fmt.Sprintf("Unable to process image http_status=%d file=%s", resp.StatusCode, inputPath)
-		return nil, errors.New(errorMsg)
+		return nil, fmt.Errorf("Unable to process image http_status=%d file=%s", resp.StatusCode, inputPath)
 	}
 
 	return ioutil.ReadAll(resp.Body)
@@ -49,7 +45,7 @@ func (c Client) RemoveFromFile(inputPath string, apiKey string, params map[strin
 func buildRequest(uri string, apiKey string, params map[string]string, inputPath string) (*http.Request, error) {
 	file, err := os.Open(inputPath)
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("Unable to read image file=%s", inputPath)
 	}
 
 	defer file.Close()
@@ -61,6 +57,7 @@ func buildRequest(uri string, apiKey string, params map[string]string, inputPath
 	if err != nil {
 		return nil, err
 	}
+
 	_, err = io.Copy(part, file)
 	if err != nil {
 		return nil, err
@@ -82,6 +79,5 @@ func buildRequest(uri string, apiKey string, params map[string]string, inputPath
 
 	req.Header.Set("Content-Type", writer.FormDataContentType())
 	req.Header.Add("X-Api-Key", apiKey)
-
 	return req, err
 }
