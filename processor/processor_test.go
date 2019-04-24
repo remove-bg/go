@@ -13,17 +13,21 @@ var _ = Describe("Processor", func() {
 	var (
 		fakeClient     *clientfakes.FakeClientInterface
 		fakeFileWriter *processorfakes.FakeFileWriterInterface
+		fakePrompt     *processorfakes.FakePromptInterface
 		subject        processor.Processor
 	)
 
 	BeforeEach(func() {
 		fakeClient = &clientfakes.FakeClientInterface{}
 		fakeFileWriter = &processorfakes.FakeFileWriterInterface{}
+		fakePrompt = &processorfakes.FakePromptInterface{}
+		fakePrompt.ConfirmLargeBatchReturns(true)
 
 		subject = processor.Processor{
 			APIKey:     "api-key",
 			Client:     fakeClient,
 			FileWriter: fakeFileWriter,
+			Prompt:     fakePrompt,
 		}
 	})
 
@@ -111,6 +115,55 @@ var _ = Describe("Processor", func() {
 			subject.Process(inputPaths, s)
 
 			Expect(fakeClient.RemoveFromFileCallCount()).To(Equal(2))
+		})
+	})
+
+	Describe("large batch confirmation", func() {
+		It("doesn't prompt under the limit", func() {
+			inputPaths := []string{"dir/image1.jpg"}
+			s := processor.Settings{
+				OutputDirectory: "output-dir",
+			}
+			subject.Process(inputPaths, s)
+
+			Expect(fakePrompt.ConfirmLargeBatchCallCount()).To(Equal(0))
+		})
+
+		It("delegates to the prompt", func() {
+			fakePrompt.ConfirmLargeBatchReturns(true)
+
+			inputPaths := make([]string, 50)
+			s := processor.Settings{
+				OutputDirectory: "output-dir",
+			}
+			subject.Process(inputPaths, s)
+
+			Expect(fakePrompt.ConfirmLargeBatchCallCount()).To(Equal(1))
+			Expect(fakeClient.RemoveFromFileCallCount()).To(Equal(50))
+		})
+
+		It("doesn't process if the confirmation is rejected", func() {
+			fakePrompt.ConfirmLargeBatchReturns(false)
+
+			inputPaths := make([]string, 50)
+			s := processor.Settings{
+				OutputDirectory: "output-dir",
+			}
+			subject.Process(inputPaths, s)
+
+			Expect(fakePrompt.ConfirmLargeBatchCallCount()).To(Equal(1))
+			Expect(fakeClient.RemoveFromFileCallCount()).To(Equal(0))
+		})
+	})
+
+	Describe("NewProcessor", func() {
+		It("builds a processor", func() {
+			p := processor.NewProcessor("api-key")
+
+			Expect(p.APIKey).To(Equal("api-key"))
+			Expect(p.Client).ToNot(BeNil())
+			Expect(p.FileWriter).ToNot(BeNil())
+			Expect(p.Prompt).ToNot(BeNil())
 		})
 	})
 })

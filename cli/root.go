@@ -1,10 +1,8 @@
 package cli
 
 import (
-	"github.com/remove-bg/go/client"
 	"github.com/remove-bg/go/processor"
 	"github.com/urfave/cli"
-	"net/http"
 )
 
 // Bootstrap the CLI
@@ -56,14 +54,7 @@ func Bootstrap() *cli.App {
 			return cli.NewExitError("Please specify one or more files", 1)
 		}
 
-		p := processor.Processor{
-			APIKey: apiKey,
-			Client: client.Client{
-				HTTPClient: http.Client{},
-			},
-			FileWriter: processor.FileWriter{},
-		}
-
+		p := processor.NewProcessor(apiKey)
 		s := processor.Settings{
 			OutputDirectory: outputDirectory,
 			ImageSettings: processor.ImageSettings{

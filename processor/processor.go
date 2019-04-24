@@ -3,12 +3,14 @@ package processor
 import (
 	"github.com/remove-bg/go/client"
 	"log"
+	"net/http"
 )
 
 type Processor struct {
 	APIKey     string
 	Client     client.ClientInterface
 	FileWriter fileWriterInterface
+	Prompt     promptInterface
 }
 
 type Settings struct {
@@ -23,7 +25,23 @@ type ImageSettings struct {
 	BgColor  string
 }
 
+func NewProcessor(apiKey string) Processor {
+	return Processor{
+		APIKey: apiKey,
+		Client: client.Client{
+			HTTPClient: http.Client{},
+		},
+		FileWriter: FileWriter{},
+		Prompt:     Prompt{},
+	}
+}
+
 func (p Processor) Process(inputPaths []string, settings Settings) {
+	confirmation := p.confirmLargeBatch(inputPaths)
+	if !confirmation {
+		return
+	}
+
 	for _, inputPath := range inputPaths {
 		outputPath := DetermineOutputPath(inputPath, settings)
 
@@ -69,4 +87,16 @@ func imageSettingsToParams(imageSettings ImageSettings) map[string]string {
 	}
 
 	return params
+}
+
+const largeBatchSize = 50
+
+func (p Processor) confirmLargeBatch(inputPaths []string) bool {
+	batchSize := len(inputPaths)
+
+	if batchSize < largeBatchSize {
+		return true
+	}
+
+	return p.Prompt.ConfirmLargeBatch(batchSize)
 }
