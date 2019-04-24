@@ -23,6 +23,10 @@ func Bootstrap() *cli.App {
 			Name:  "output-directory",
 			Usage: "Output directory",
 		},
+		cli.BoolFlag{
+			Name:  "skip-confirm-large-batch",
+			Usage: "Skip confirmation of large batch sizes",
+		},
 		cli.StringFlag{
 			Name:  "size",
 			Usage: "Image size",
@@ -56,7 +60,8 @@ func Bootstrap() *cli.App {
 
 		p := processor.NewProcessor(apiKey)
 		s := processor.Settings{
-			OutputDirectory: outputDirectory,
+			OutputDirectory:       outputDirectory,
+			SkipConfirmLargeBatch: c.Bool("skip-confirm-large-batch"),
 			ImageSettings: processor.ImageSettings{
 				Size:     c.String("size"),
 				Type:     c.String("type"),

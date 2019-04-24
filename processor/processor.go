@@ -14,8 +14,9 @@ type Processor struct {
 }
 
 type Settings struct {
-	OutputDirectory string
-	ImageSettings   ImageSettings
+	OutputDirectory       string
+	SkipConfirmLargeBatch bool
+	ImageSettings         ImageSettings
 }
 
 type ImageSettings struct {
@@ -37,7 +38,7 @@ func NewProcessor(apiKey string) Processor {
 }
 
 func (p Processor) Process(inputPaths []string, settings Settings) {
-	confirmation := p.confirmLargeBatch(inputPaths)
+	confirmation := p.confirmLargeBatch(inputPaths, settings)
 	if !confirmation {
 		return
 	}
@@ -91,10 +92,10 @@ func imageSettingsToParams(imageSettings ImageSettings) map[string]string {
 
 const largeBatchSize = 50
 
-func (p Processor) confirmLargeBatch(inputPaths []string) bool {
+func (p Processor) confirmLargeBatch(inputPaths []string, settings Settings) bool {
 	batchSize := len(inputPaths)
 
-	if batchSize < largeBatchSize {
+	if batchSize < largeBatchSize || settings.SkipConfirmLargeBatch {
 		return true
 	}
 

@@ -122,7 +122,8 @@ var _ = Describe("Processor", func() {
 		It("doesn't prompt under the limit", func() {
 			inputPaths := []string{"dir/image1.jpg"}
 			s := processor.Settings{
-				OutputDirectory: "output-dir",
+				OutputDirectory:       "output-dir",
+				SkipConfirmLargeBatch: false,
 			}
 			subject.Process(inputPaths, s)
 
@@ -134,11 +135,26 @@ var _ = Describe("Processor", func() {
 
 			inputPaths := make([]string, 50)
 			s := processor.Settings{
-				OutputDirectory: "output-dir",
+				OutputDirectory:       "output-dir",
+				SkipConfirmLargeBatch: false,
 			}
+
 			subject.Process(inputPaths, s)
 
 			Expect(fakePrompt.ConfirmLargeBatchCallCount()).To(Equal(1))
+			Expect(fakeClient.RemoveFromFileCallCount()).To(Equal(50))
+		})
+
+		It("can be skipped", func() {
+			inputPaths := make([]string, 50)
+			s := processor.Settings{
+				OutputDirectory:       "output-dir",
+				SkipConfirmLargeBatch: true,
+			}
+
+			subject.Process(inputPaths, s)
+
+			Expect(fakePrompt.ConfirmLargeBatchCallCount()).To(Equal(0))
 			Expect(fakeClient.RemoveFromFileCallCount()).To(Equal(50))
 		})
 
@@ -147,7 +163,8 @@ var _ = Describe("Processor", func() {
 
 			inputPaths := make([]string, 50)
 			s := processor.Settings{
-				OutputDirectory: "output-dir",
+				OutputDirectory:       "output-dir",
+				SkipConfirmLargeBatch: false,
 			}
 			subject.Process(inputPaths, s)
 
