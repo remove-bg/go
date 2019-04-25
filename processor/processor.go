@@ -14,9 +14,10 @@ type Processor struct {
 }
 
 type Settings struct {
-	OutputDirectory       string
-	SkipConfirmLargeBatch bool
-	ImageSettings         ImageSettings
+	OutputDirectory            string
+	SkipConfirmLargeBatch      bool
+	LargeBatchConfirmThreshold int
+	ImageSettings              ImageSettings
 }
 
 type ImageSettings struct {
@@ -90,12 +91,11 @@ func imageSettingsToParams(imageSettings ImageSettings) map[string]string {
 	return params
 }
 
-const largeBatchSize = 50
-
 func (p Processor) confirmLargeBatch(inputPaths []string, settings Settings) bool {
 	batchSize := len(inputPaths)
+	overThreshold := batchSize < settings.LargeBatchConfirmThreshold
 
-	if batchSize < largeBatchSize || settings.SkipConfirmLargeBatch {
+	if overThreshold || settings.SkipConfirmLargeBatch {
 		return true
 	}
 

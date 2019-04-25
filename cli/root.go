@@ -5,6 +5,8 @@ import (
 	"github.com/urfave/cli"
 )
 
+const defaultLargeBatchSize = 50
+
 // Bootstrap the CLI
 func Bootstrap() *cli.App {
 	app := cli.NewApp()
@@ -26,6 +28,11 @@ func Bootstrap() *cli.App {
 		cli.BoolFlag{
 			Name:  "skip-confirm-large-batch",
 			Usage: "Skip confirmation of large batch sizes",
+		},
+		cli.IntFlag{
+			Name:  "large-batch-confirm-threshold",
+			Usage: "Threshold for large batch confirmation",
+			Value: defaultLargeBatchSize,
 		},
 		cli.StringFlag{
 			Name:  "size",
@@ -60,8 +67,9 @@ func Bootstrap() *cli.App {
 
 		p := processor.NewProcessor(apiKey)
 		s := processor.Settings{
-			OutputDirectory:       outputDirectory,
-			SkipConfirmLargeBatch: c.Bool("skip-confirm-large-batch"),
+			OutputDirectory:            outputDirectory,
+			SkipConfirmLargeBatch:      c.Bool("skip-confirm-large-batch"),
+			LargeBatchConfirmThreshold: c.Int("large-batch-confirm-threshold"),
 			ImageSettings: processor.ImageSettings{
 				Size:     c.String("size"),
 				Type:     c.String("type"),
