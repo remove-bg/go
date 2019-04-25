@@ -1,5 +1,7 @@
 # Go
 
+[![CircleCI](https://circleci.com/gh/remove-bg/go.svg?style=shield)](https://circleci.com/gh/remove-bg/go)
+
 *Under development*
 
 ## Development
