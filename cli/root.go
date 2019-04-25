@@ -1,6 +1,7 @@
 package cli
 
 import (
+	"github.com/remove-bg/go/client"
 	"github.com/remove-bg/go/processor"
 	"github.com/urfave/cli"
 )
@@ -13,7 +14,7 @@ func Bootstrap() *cli.App {
 
 	app.Name = "removebg"
 	app.Description = "Remove image background - 100% automatically"
-	app.Version = "0.1.0"
+	app.Version = client.Version
 
 	app.Flags = []cli.Flag{
 		cli.StringFlag{

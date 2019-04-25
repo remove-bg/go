@@ -12,6 +12,7 @@ import (
 )
 
 const APIEndpoint = "https://api.remove.bg/v1.0/removebg"
+const Version = "0.1.0"
 
 //go:generate counterfeiter . ClientInterface
 type ClientInterface interface {
@@ -79,5 +80,10 @@ func buildRequest(uri string, apiKey string, params map[string]string, inputPath
 
 	req.Header.Set("Content-Type", writer.FormDataContentType())
 	req.Header.Add("X-Api-Key", apiKey)
+	req.Header.Add("User-Agent", userAgent())
 	return req, err
+}
+
+func userAgent() string {
+	return fmt.Sprintf("remove-bg-go-%s", Version)
 }

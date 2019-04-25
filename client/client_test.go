@@ -43,6 +43,18 @@ var _ = Describe("Client", func() {
 		Expect(gock.IsDone()).To(BeTrue())
 	})
 
+	It("includes the client version", func() {
+		gock.New("https://api.remove.bg").
+			Post("/v1.0/removebg").
+			MatchHeader("User-Agent", `^remove-bg-go-\d+\.\d+\.\d+$`).
+			Reply(200).
+			BodyString("data")
+
+		subject.RemoveFromFile(fixtureFile, "api-key", map[string]string{})
+
+		Expect(gock.IsDone()).To(BeTrue())
+	})
+
 	Context("HTTP error", func() {
 		It("returns a clear error", func() {
 			gock.New("https://api.remove.bg").
