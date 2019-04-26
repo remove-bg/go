@@ -7,7 +7,7 @@ import (
 	"github.com/remove-bg/go/processor"
 )
 
-type FakeFileWriterInterface struct {
+type FakeStorageInterface struct {
 	WriteStub        func(string, []byte) error
 	writeMutex       sync.RWMutex
 	writeArgsForCall []struct {
@@ -24,7 +24,7 @@ type FakeFileWriterInterface struct {
 	invocationsMutex sync.RWMutex
 }
 
-func (fake *FakeFileWriterInterface) Write(arg1 string, arg2 []byte) error {
+func (fake *FakeStorageInterface) Write(arg1 string, arg2 []byte) error {
 	var arg2Copy []byte
 	if arg2 != nil {
 		arg2Copy = make([]byte, len(arg2))
@@ -48,26 +48,26 @@ func (fake *FakeFileWriterInterface) Write(arg1 string, arg2 []byte) error {
 	return fakeReturns.result1
 }
 
-func (fake *FakeFileWriterInterface) WriteCallCount() int {
+func (fake *FakeStorageInterface) WriteCallCount() int {
 	fake.writeMutex.RLock()
 	defer fake.writeMutex.RUnlock()
 	return len(fake.writeArgsForCall)
 }
 
-func (fake *FakeFileWriterInterface) WriteCalls(stub func(string, []byte) error) {
+func (fake *FakeStorageInterface) WriteCalls(stub func(string, []byte) error) {
 	fake.writeMutex.Lock()
 	defer fake.writeMutex.Unlock()
 	fake.WriteStub = stub
 }
 
-func (fake *FakeFileWriterInterface) WriteArgsForCall(i int) (string, []byte) {
+func (fake *FakeStorageInterface) WriteArgsForCall(i int) (string, []byte) {
 	fake.writeMutex.RLock()
 	defer fake.writeMutex.RUnlock()
 	argsForCall := fake.writeArgsForCall[i]
 	return argsForCall.arg1, argsForCall.arg2
 }
 
-func (fake *FakeFileWriterInterface) WriteReturns(result1 error) {
+func (fake *FakeStorageInterface) WriteReturns(result1 error) {
 	fake.writeMutex.Lock()
 	defer fake.writeMutex.Unlock()
 	fake.WriteStub = nil
@@ -76,7 +76,7 @@ func (fake *FakeFileWriterInterface) WriteReturns(result1 error) {
 	}{result1}
 }
 
-func (fake *FakeFileWriterInterface) WriteReturnsOnCall(i int, result1 error) {
+func (fake *FakeStorageInterface) WriteReturnsOnCall(i int, result1 error) {
 	fake.writeMutex.Lock()
 	defer fake.writeMutex.Unlock()
 	fake.WriteStub = nil
@@ -90,7 +90,7 @@ func (fake *FakeFileWriterInterface) WriteReturnsOnCall(i int, result1 error) {
 	}{result1}
 }
 
-func (fake *FakeFileWriterInterface) Invocations() map[string][][]interface{} {
+func (fake *FakeStorageInterface) Invocations() map[string][][]interface{} {
 	fake.invocationsMutex.RLock()
 	defer fake.invocationsMutex.RUnlock()
 	fake.writeMutex.RLock()
@@ -102,7 +102,7 @@ func (fake *FakeFileWriterInterface) Invocations() map[string][][]interface{} {
 	return copiedInvocations
 }
 
-func (fake *FakeFileWriterInterface) recordInvocation(key string, args []interface{}) {
+func (fake *FakeStorageInterface) recordInvocation(key string, args []interface{}) {
 	fake.invocationsMutex.Lock()
 	defer fake.invocationsMutex.Unlock()
 	if fake.invocations == nil {
@@ -114,4 +114,4 @@ func (fake *FakeFileWriterInterface) recordInvocation(key string, args []interfa
 	fake.invocations[key] = append(fake.invocations[key], args)
 }
 
-var _ processor.FileWriterInterface = new(FakeFileWriterInterface)
+var _ processor.StorageInterface = new(FakeStorageInterface)

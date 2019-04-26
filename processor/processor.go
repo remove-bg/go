@@ -6,11 +6,11 @@ import (
 )
 
 type Processor struct {
-	APIKey     string
-	Client     client.ClientInterface
-	FileWriter FileWriterInterface
-	Prompt     PromptInterface
-	Notifier   NotifierInterface
+	APIKey   string
+	Client   client.ClientInterface
+	Storage  StorageInterface
+	Prompt   PromptInterface
+	Notifier NotifierInterface
 }
 
 type Settings struct {
@@ -33,9 +33,9 @@ func NewProcessor(apiKey string) Processor {
 		Client: client.Client{
 			HTTPClient: http.Client{},
 		},
-		FileWriter: FileWriter{},
-		Prompt:     Prompt{},
-		Notifier:   NewNotifier(),
+		Storage:  FileStorage{},
+		Prompt:   Prompt{},
+		Notifier: NewNotifier(),
 	}
 }
 
@@ -67,7 +67,7 @@ func (p Processor) processFile(inputPath string, outputPath string, imageSetting
 		return err
 	}
 
-	return p.FileWriter.Write(outputPath, processedBytes)
+	return p.Storage.Write(outputPath, processedBytes)
 }
 
 func imageSettingsToParams(imageSettings ImageSettings) map[string]string {

@@ -11,27 +11,27 @@ import (
 
 var _ = Describe("Processor", func() {
 	var (
-		fakeClient     *clientfakes.FakeClientInterface
-		fakeFileWriter *processorfakes.FakeFileWriterInterface
-		fakePrompt     *processorfakes.FakePromptInterface
-		fakeNotifier   *processorfakes.FakeNotifierInterface
-		subject        processor.Processor
-		testSettings   processor.Settings
+		fakeClient   *clientfakes.FakeClientInterface
+		fakeStorage  *processorfakes.FakeStorageInterface
+		fakePrompt   *processorfakes.FakePromptInterface
+		fakeNotifier *processorfakes.FakeNotifierInterface
+		subject      processor.Processor
+		testSettings processor.Settings
 	)
 
 	BeforeEach(func() {
 		fakeClient = &clientfakes.FakeClientInterface{}
-		fakeFileWriter = &processorfakes.FakeFileWriterInterface{}
+		fakeStorage = &processorfakes.FakeStorageInterface{}
 		fakePrompt = &processorfakes.FakePromptInterface{}
 		fakeNotifier = &processorfakes.FakeNotifierInterface{}
 		fakePrompt.ConfirmLargeBatchReturns(true)
 
 		subject = processor.Processor{
-			APIKey:     "api-key",
-			Client:     fakeClient,
-			FileWriter: fakeFileWriter,
-			Prompt:     fakePrompt,
-			Notifier:   fakeNotifier,
+			APIKey:   "api-key",
+			Client:   fakeClient,
+			Storage:  fakeStorage,
+			Prompt:   fakePrompt,
+			Notifier: fakeNotifier,
 		}
 
 		testSettings = processor.Settings{
@@ -55,9 +55,9 @@ var _ = Describe("Processor", func() {
 		Expect(clientArg2).To(Equal("api-key"))
 		Expect(len(params)).To(Equal(0))
 
-		Expect(fakeFileWriter.WriteCallCount()).To(Equal(2))
+		Expect(fakeStorage.WriteCallCount()).To(Equal(2))
 
-		writerArg1, writerArg2 := fakeFileWriter.WriteArgsForCall(0)
+		writerArg1, writerArg2 := fakeStorage.WriteArgsForCall(0)
 		Expect(writerArg1).To(Equal("output-dir/image1.png"))
 		Expect(writerArg2).To(Equal([]byte("Processed1")))
 	})
@@ -93,11 +93,11 @@ var _ = Describe("Processor", func() {
 			subject.Process(inputPaths, testSettings)
 
 			Expect(fakeClient.RemoveFromFileCallCount()).To(Equal(2))
-			Expect(fakeFileWriter.WriteCallCount()).To(Equal(1))
+			Expect(fakeStorage.WriteCallCount()).To(Equal(1))
 			Expect(fakeNotifier.ErrorCallCount()).To(Equal(1))
 			Expect(fakeNotifier.SuccessCallCount()).To(Equal(1))
 
-			_, writerArg2 := fakeFileWriter.WriteArgsForCall(0)
+			_, writerArg2 := fakeStorage.WriteArgsForCall(0)
 			Expect(writerArg2).To(Equal([]byte("Processed2")))
 		})
 
@@ -124,7 +124,7 @@ var _ = Describe("Processor", func() {
 		It("keeps processing images", func() {
 			fakeClient.RemoveFromFileReturnsOnCall(0, []byte("Processed1"), nil)
 			fakeClient.RemoveFromFileReturnsOnCall(1, []byte("Processed2"), nil)
-			fakeFileWriter.WriteReturnsOnCall(0, errors.New("boom"))
+			fakeStorage.WriteReturnsOnCall(0, errors.New("boom"))
 			inputPaths := []string{"dir/image1.jpg", "dir/image2.jpg"}
 
 			subject.Process(inputPaths, testSettings)
@@ -138,7 +138,7 @@ var _ = Describe("Processor", func() {
 			err := errors.New("boom")
 			fakeClient.RemoveFromFileReturnsOnCall(0, []byte("Processed1"), nil)
 			fakeClient.RemoveFromFileReturnsOnCall(1, []byte("Processed2"), nil)
-			fakeFileWriter.WriteReturnsOnCall(0, err)
+			fakeStorage.WriteReturnsOnCall(0, err)
 			inputPaths := []string{"dir/image1.jpg", "dir/image2.jpg"}
 
 			subject.Process(inputPaths, testSettings)
@@ -219,7 +219,7 @@ var _ = Describe("Processor", func() {
 
 			Expect(p.APIKey).To(Equal("api-key"))
 			Expect(p.Client).ToNot(BeNil())
-			Expect(p.FileWriter).ToNot(BeNil())
+			Expect(p.Storage).ToNot(BeNil())
 			Expect(p.Prompt).ToNot(BeNil())
 			Expect(p.Notifier).ToNot(BeNil())
 		})
