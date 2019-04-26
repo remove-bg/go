@@ -14,6 +14,7 @@ var _ = Describe("Processor", func() {
 		fakeClient     *clientfakes.FakeClientInterface
 		fakeFileWriter *processorfakes.FakeFileWriterInterface
 		fakePrompt     *processorfakes.FakePromptInterface
+		fakeNotifier   *processorfakes.FakeNotifierInterface
 		subject        processor.Processor
 		testSettings   processor.Settings
 	)
@@ -22,6 +23,7 @@ var _ = Describe("Processor", func() {
 		fakeClient = &clientfakes.FakeClientInterface{}
 		fakeFileWriter = &processorfakes.FakeFileWriterInterface{}
 		fakePrompt = &processorfakes.FakePromptInterface{}
+		fakeNotifier = &processorfakes.FakeNotifierInterface{}
 		fakePrompt.ConfirmLargeBatchReturns(true)
 
 		subject = processor.Processor{
@@ -29,6 +31,7 @@ var _ = Describe("Processor", func() {
 			Client:     fakeClient,
 			FileWriter: fakeFileWriter,
 			Prompt:     fakePrompt,
+			Notifier:   fakeNotifier,
 		}
 
 		testSettings = processor.Settings{
@@ -91,9 +94,29 @@ var _ = Describe("Processor", func() {
 
 			Expect(fakeClient.RemoveFromFileCallCount()).To(Equal(2))
 			Expect(fakeFileWriter.WriteCallCount()).To(Equal(1))
+			Expect(fakeNotifier.ErrorCallCount()).To(Equal(1))
+			Expect(fakeNotifier.SuccessCallCount()).To(Equal(1))
 
 			_, writerArg2 := fakeFileWriter.WriteArgsForCall(0)
 			Expect(writerArg2).To(Equal([]byte("Processed2")))
+		})
+
+		It("passes the error details to the notifier", func() {
+			err := errors.New("boom")
+			fakeClient.RemoveFromFileReturnsOnCall(0, nil, err)
+			fakeClient.RemoveFromFileReturnsOnCall(1, []byte("Processed2"), nil)
+			inputPaths := []string{"dir/image1.jpg", "dir/image2.jpg"}
+
+			subject.Process(inputPaths, testSettings)
+
+			Expect(fakeNotifier.ErrorCallCount()).To(Equal(1))
+
+			notifiedErr, notifiedPath, notifiedImageNumber, notifiedTotal := fakeNotifier.ErrorArgsForCall(0)
+
+			Expect(notifiedErr).To(Equal(err))
+			Expect(notifiedPath).To(Equal("dir/image1.jpg"))
+			Expect(notifiedImageNumber).To(Equal(1))
+			Expect(notifiedTotal).To(Equal(2))
 		})
 	})
 
@@ -107,6 +130,27 @@ var _ = Describe("Processor", func() {
 			subject.Process(inputPaths, testSettings)
 
 			Expect(fakeClient.RemoveFromFileCallCount()).To(Equal(2))
+			Expect(fakeNotifier.ErrorCallCount()).To(Equal(1))
+			Expect(fakeNotifier.SuccessCallCount()).To(Equal(1))
+		})
+
+		It("passes the error details to the notifier", func() {
+			err := errors.New("boom")
+			fakeClient.RemoveFromFileReturnsOnCall(0, []byte("Processed1"), nil)
+			fakeClient.RemoveFromFileReturnsOnCall(1, []byte("Processed2"), nil)
+			fakeFileWriter.WriteReturnsOnCall(0, err)
+			inputPaths := []string{"dir/image1.jpg", "dir/image2.jpg"}
+
+			subject.Process(inputPaths, testSettings)
+
+			Expect(fakeNotifier.ErrorCallCount()).To(Equal(1))
+
+			notifiedErr, notifiedPath, notifiedImageNumber, notifiedTotal := fakeNotifier.ErrorArgsForCall(0)
+
+			Expect(notifiedErr).To(Equal(err))
+			Expect(notifiedPath).To(Equal("dir/image1.jpg"))
+			Expect(notifiedImageNumber).To(Equal(1))
+			Expect(notifiedTotal).To(Equal(2))
 		})
 	})
 
@@ -177,6 +221,7 @@ var _ = Describe("Processor", func() {
 			Expect(p.Client).ToNot(BeNil())
 			Expect(p.FileWriter).ToNot(BeNil())
 			Expect(p.Prompt).ToNot(BeNil())
+			Expect(p.Notifier).ToNot(BeNil())
 		})
 	})
 })

@@ -2,15 +2,15 @@ package processor
 
 import (
 	"github.com/remove-bg/go/client"
-	"log"
 	"net/http"
 )
 
 type Processor struct {
 	APIKey     string
 	Client     client.ClientInterface
-	FileWriter fileWriterInterface
-	Prompt     promptInterface
+	FileWriter FileWriterInterface
+	Prompt     PromptInterface
+	Notifier   NotifierInterface
 }
 
 type Settings struct {
@@ -35,6 +35,7 @@ func NewProcessor(apiKey string) Processor {
 		},
 		FileWriter: FileWriter{},
 		Prompt:     Prompt{},
+		Notifier:   NewNotifier(),
 	}
 }
 
@@ -44,28 +45,29 @@ func (p Processor) Process(inputPaths []string, settings Settings) {
 		return
 	}
 
-	for _, inputPath := range inputPaths {
-		outputPath := DetermineOutputPath(inputPath, settings)
+	totalImages := len(inputPaths)
 
-		p.processFile(inputPath, outputPath, settings.ImageSettings)
+	for index, inputPath := range inputPaths {
+		outputPath := DetermineOutputPath(inputPath, settings)
+		err := p.processFile(inputPath, outputPath, settings.ImageSettings)
+
+		if err == nil {
+			p.Notifier.Success(inputPath, index+1, totalImages)
+		} else {
+			p.Notifier.Error(err, inputPath, index+1, totalImages)
+		}
 	}
 }
 
-func (p Processor) processFile(inputPath string, outputPath string, imageSettings ImageSettings) {
+func (p Processor) processFile(inputPath string, outputPath string, imageSettings ImageSettings) error {
 	params := imageSettingsToParams(imageSettings)
 	processedBytes, err := p.Client.RemoveFromFile(inputPath, p.APIKey, params)
 
 	if err != nil {
-		log.Print(err)
-		return
+		return err
 	}
 
-	err = p.FileWriter.Write(outputPath, processedBytes)
-
-	if err != nil {
-		log.Print(err)
-		return
-	}
+	return p.FileWriter.Write(outputPath, processedBytes)
 }
 
 func imageSettingsToParams(imageSettings ImageSettings) map[string]string {

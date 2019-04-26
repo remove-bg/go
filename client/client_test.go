@@ -1,7 +1,6 @@
 package client_test
 
 import (
-	"fmt"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 	"github.com/remove-bg/go/client"
@@ -65,10 +64,7 @@ var _ = Describe("Client", func() {
 			result, err := subject.RemoveFromFile(fixtureFile, "api-key", map[string]string{})
 
 			Expect(result).To(BeNil())
-
-			expectedError := fmt.Sprintf("Unable to process image http_status=400 file=%s", fixtureFile)
-
-			Expect(err).To(MatchError(expectedError))
+			Expect(err).To(MatchError("Unable to process image http_status=400"))
 		})
 	})
 
@@ -78,10 +74,7 @@ var _ = Describe("Client", func() {
 			result, err := subject.RemoveFromFile(nonExistentFile, "api-key", map[string]string{})
 
 			Expect(result).To(BeNil())
-
-			expectedError := fmt.Sprintf("Unable to read image file=%s", nonExistentFile)
-
-			Expect(err).To(MatchError(expectedError))
+			Expect(err).To(MatchError("Unable to read file"))
 		})
 	})
 })

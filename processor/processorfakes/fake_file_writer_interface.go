@@ -3,6 +3,8 @@ package processorfakes
 
 import (
 	"sync"
+
+	"github.com/remove-bg/go/processor"
 )
 
 type FakeFileWriterInterface struct {
@@ -111,3 +113,5 @@ func (fake *FakeFileWriterInterface) recordInvocation(key string, args []interfa
 	}
 	fake.invocations[key] = append(fake.invocations[key], args)
 }
+
+var _ processor.FileWriterInterface = new(FakeFileWriterInterface)

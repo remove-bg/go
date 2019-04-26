@@ -5,8 +5,8 @@ import (
 	"gopkg.in/AlecAivazis/survey.v1"
 )
 
-//go:generate counterfeiter . promptInterface
-type promptInterface interface {
+//go:generate counterfeiter . PromptInterface
+type PromptInterface interface {
 	ConfirmLargeBatch(size int) bool
 }
 

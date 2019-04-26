@@ -2,8 +2,8 @@ package processor
 
 import "os"
 
-//go:generate counterfeiter . fileWriterInterface
-type fileWriterInterface interface {
+//go:generate counterfeiter . FileWriterInterface
+type FileWriterInterface interface {
 	Write(path string, data []byte) error
 }
 

@@ -32,6 +32,14 @@
   revision = "95032a82bc518f77982ea72343cc1ade730072f0"
 
 [[projects]]
+  digest = "1:31e761d97c76151dde79e9d28964a812c46efc5baee4085b86f68f0c654450de"
+  name = "github.com/konsorten/go-windows-terminal-sequences"
+  packages = ["."]
+  pruneopts = "UT"
+  revision = "f55edac94c9bbba5d6182a4be46d86a2c9b5b50e"
+  version = "v1.0.2"
+
+[[projects]]
   digest = "1:2fa7b0155cd54479a755c629de26f888a918e13f8857a2c442205d825368e084"
   name = "github.com/mattn/go-colorable"
   packages = ["."]
@@ -102,6 +110,17 @@
   pruneopts = "UT"
   revision = "90e289841c1ed79b7a598a7cd9959750cb5e89e2"
   version = "v1.5.0"
+
+[[projects]]
+  digest = "1:33a48129d0a0eeb790b9ccba3560d2bc191b023e14285369e9f7dfae1e22830a"
+  name = "github.com/sirupsen/logrus"
+  packages = [
+    ".",
+    "hooks/test",
+  ]
+  pruneopts = "UT"
+  revision = "8bdbc7bcc01dcbb8ec23dc8a28e332258d25251f"
+  version = "v1.4.1"
 
 [[projects]]
   digest = "1:b24d38b282bacf9791408a080f606370efa3d364e4b5fd9ba0f7b87786d3b679"
@@ -206,8 +225,11 @@
   analyzer-name = "dep"
   analyzer-version = 1
   input-imports = [
+    "github.com/mattn/go-colorable",
     "github.com/onsi/ginkgo",
     "github.com/onsi/gomega",
+    "github.com/sirupsen/logrus",
+    "github.com/sirupsen/logrus/hooks/test",
     "github.com/urfave/cli",
     "gopkg.in/AlecAivazis/survey.v1",
     "gopkg.in/h2non/gock.v1",

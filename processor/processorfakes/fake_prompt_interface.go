@@ -3,6 +3,8 @@ package processorfakes
 
 import (
 	"sync"
+
+	"github.com/remove-bg/go/processor"
 )
 
 type FakePromptInterface struct {
@@ -104,3 +106,5 @@ func (fake *FakePromptInterface) recordInvocation(key string, args []interface{}
 	}
 	fake.invocations[key] = append(fake.invocations[key], args)
 }
+
+var _ processor.PromptInterface = new(FakePromptInterface)

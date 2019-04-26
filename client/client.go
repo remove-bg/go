@@ -2,6 +2,7 @@ package client
 
 import (
 	"bytes"
+	"errors"
 	"fmt"
 	"io"
 	"io/ioutil"
@@ -37,7 +38,7 @@ func (c Client) RemoveFromFile(inputPath string, apiKey string, params map[strin
 	defer resp.Body.Close()
 
 	if resp.StatusCode != 200 {
-		return nil, fmt.Errorf("Unable to process image http_status=%d file=%s", resp.StatusCode, inputPath)
+		return nil, fmt.Errorf("Unable to process image http_status=%d", resp.StatusCode)
 	}
 
 	return ioutil.ReadAll(resp.Body)
@@ -46,7 +47,7 @@ func (c Client) RemoveFromFile(inputPath string, apiKey string, params map[strin
 func buildRequest(uri string, apiKey string, params map[string]string, inputPath string) (*http.Request, error) {
 	file, err := os.Open(inputPath)
 	if err != nil {
-		return nil, fmt.Errorf("Unable to read image file=%s", inputPath)
+		return nil, errors.New("Unable to read file")
 	}
 
 	defer file.Close()
