@@ -13,6 +13,8 @@ func Bootstrap() *cli.App {
 	app := cli.NewApp()
 
 	app.Name = "removebg"
+	app.Usage = ""
+	app.UsageText = "removebg [options] <file>..."
 	app.Description = "Remove image background - 100% automatically"
 	app.Version = client.Version
 
