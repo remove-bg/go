@@ -37,6 +37,7 @@ var _ = Describe("Processor", func() {
 		testSettings = processor.Settings{
 			OutputDirectory:            "output-dir",
 			LargeBatchConfirmThreshold: 50,
+			ReprocessExisting:          false,
 		}
 	})
 
@@ -171,6 +172,17 @@ var _ = Describe("Processor", func() {
 			Expect(notifiedOutput).To(Equal("dir/image1-removebg.png"))
 			Expect(notifiedImageNumber).To(Equal(1))
 			Expect(notifiedTotal).To(Equal(1))
+		})
+
+		It("can be configured to force re-processing of existing files", func() {
+			testSettings.ReprocessExisting = true
+			fakeStorage.FileExistsReturns(true)
+
+			subject.Process([]string{"dir/image1.jpg"}, testSettings)
+
+			Expect(fakeClient.RemoveFromFileCallCount()).To(Equal(1))
+			Expect(fakeStorage.WriteCallCount()).To(Equal(1))
+			Expect(fakeNotifier.SuccessCallCount()).To(Equal(1))
 		})
 	})
 

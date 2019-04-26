@@ -15,6 +15,7 @@ type Processor struct {
 
 type Settings struct {
 	OutputDirectory            string
+	ReprocessExisting          bool
 	SkipConfirmLargeBatch      bool
 	LargeBatchConfirmThreshold int
 	ImageSettings              ImageSettings
@@ -49,8 +50,9 @@ func (p Processor) Process(inputPaths []string, settings Settings) {
 
 	for index, inputPath := range inputPaths {
 		outputPath := DetermineOutputPath(inputPath, settings)
+		skipImage := p.Storage.FileExists(outputPath) && !settings.ReprocessExisting
 
-		if p.Storage.FileExists(outputPath) {
+		if skipImage {
 			p.Notifier.Skip(inputPath, outputPath, index+1, totalImages)
 			return
 		}
