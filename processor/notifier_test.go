@@ -29,6 +29,25 @@ var _ = Describe("Notifier", func() {
 		})
 	})
 
+	Describe("Skip", func() {
+		It("logs the image details", func() {
+			logger, hook := test.NewNullLogger()
+			subject := Notifier{
+				Logger: logger,
+			}
+
+			subject.Skip("input/image.jpg", "output/image.png", 1, 2)
+
+			logged := hook.LastEntry()
+
+			Expect(logged).ToNot(BeNil())
+			Expect(logged.Message).To(Equal("Skipped image"))
+			Expect(logged.Data["image"]).To(Equal("1/2"))
+			Expect(logged.Data["input"]).To(Equal("input/image.jpg"))
+			Expect(logged.Data["existing"]).To(Equal("output/image.png"))
+		})
+	})
+
 	Describe("Error", func() {
 		It("logs the error and image details", func() {
 			logger, hook := test.NewNullLogger()

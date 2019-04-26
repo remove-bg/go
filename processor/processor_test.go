@@ -154,6 +154,26 @@ var _ = Describe("Processor", func() {
 		})
 	})
 
+	Describe("skipping already processed files", func() {
+		It("skips processing if the output file exists", func() {
+			testSettings.OutputDirectory = ""
+			inputPaths := []string{"dir/image1.jpg"}
+			fakeStorage.FileExistsReturns(true)
+
+			subject.Process(inputPaths, testSettings)
+
+			Expect(fakeClient.RemoveFromFileCallCount()).To(Equal(0))
+			Expect(fakeNotifier.SkipCallCount()).To(Equal(1))
+
+			notifiedInput, notifiedOutput, notifiedImageNumber, notifiedTotal := fakeNotifier.SkipArgsForCall(0)
+
+			Expect(notifiedInput).To(Equal("dir/image1.jpg"))
+			Expect(notifiedOutput).To(Equal("dir/image1-removebg.png"))
+			Expect(notifiedImageNumber).To(Equal(1))
+			Expect(notifiedTotal).To(Equal(1))
+		})
+	})
+
 	Describe("large batch confirmation", func() {
 		It("doesn't prompt under the limit", func() {
 			inputPaths := []string{"dir/image1.jpg"}

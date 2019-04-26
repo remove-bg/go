@@ -9,6 +9,7 @@ import (
 //go:generate counterfeiter . NotifierInterface
 type NotifierInterface interface {
 	Success(path string, imageNumber int, totalImages int)
+	Skip(input string, existing string, imageNumber int, totalImages int)
 	Error(err error, path string, imageNumber int, totalImages int)
 }
 
@@ -37,4 +38,12 @@ func (n Notifier) Error(err error, path string, imageNumber int, totalImages int
 		"image": fmt.Sprintf("%d/%d", imageNumber, totalImages),
 		"input": path,
 	}).Error(err)
+}
+
+func (n Notifier) Skip(input string, existing string, imageNumber int, totalImages int) {
+	n.Logger.WithFields(logrus.Fields{
+		"image":    fmt.Sprintf("%d/%d", imageNumber, totalImages),
+		"input":    input,
+		"existing": existing,
+	}).Warn("Skipped image")
 }

@@ -8,6 +8,17 @@ import (
 )
 
 type FakeStorageInterface struct {
+	FileExistsStub        func(string) bool
+	fileExistsMutex       sync.RWMutex
+	fileExistsArgsForCall []struct {
+		arg1 string
+	}
+	fileExistsReturns struct {
+		result1 bool
+	}
+	fileExistsReturnsOnCall map[int]struct {
+		result1 bool
+	}
 	WriteStub        func(string, []byte) error
 	writeMutex       sync.RWMutex
 	writeArgsForCall []struct {
@@ -22,6 +33,66 @@ type FakeStorageInterface struct {
 	}
 	invocations      map[string][][]interface{}
 	invocationsMutex sync.RWMutex
+}
+
+func (fake *FakeStorageInterface) FileExists(arg1 string) bool {
+	fake.fileExistsMutex.Lock()
+	ret, specificReturn := fake.fileExistsReturnsOnCall[len(fake.fileExistsArgsForCall)]
+	fake.fileExistsArgsForCall = append(fake.fileExistsArgsForCall, struct {
+		arg1 string
+	}{arg1})
+	fake.recordInvocation("FileExists", []interface{}{arg1})
+	fake.fileExistsMutex.Unlock()
+	if fake.FileExistsStub != nil {
+		return fake.FileExistsStub(arg1)
+	}
+	if specificReturn {
+		return ret.result1
+	}
+	fakeReturns := fake.fileExistsReturns
+	return fakeReturns.result1
+}
+
+func (fake *FakeStorageInterface) FileExistsCallCount() int {
+	fake.fileExistsMutex.RLock()
+	defer fake.fileExistsMutex.RUnlock()
+	return len(fake.fileExistsArgsForCall)
+}
+
+func (fake *FakeStorageInterface) FileExistsCalls(stub func(string) bool) {
+	fake.fileExistsMutex.Lock()
+	defer fake.fileExistsMutex.Unlock()
+	fake.FileExistsStub = stub
+}
+
+func (fake *FakeStorageInterface) FileExistsArgsForCall(i int) string {
+	fake.fileExistsMutex.RLock()
+	defer fake.fileExistsMutex.RUnlock()
+	argsForCall := fake.fileExistsArgsForCall[i]
+	return argsForCall.arg1
+}
+
+func (fake *FakeStorageInterface) FileExistsReturns(result1 bool) {
+	fake.fileExistsMutex.Lock()
+	defer fake.fileExistsMutex.Unlock()
+	fake.FileExistsStub = nil
+	fake.fileExistsReturns = struct {
+		result1 bool
+	}{result1}
+}
+
+func (fake *FakeStorageInterface) FileExistsReturnsOnCall(i int, result1 bool) {
+	fake.fileExistsMutex.Lock()
+	defer fake.fileExistsMutex.Unlock()
+	fake.FileExistsStub = nil
+	if fake.fileExistsReturnsOnCall == nil {
+		fake.fileExistsReturnsOnCall = make(map[int]struct {
+			result1 bool
+		})
+	}
+	fake.fileExistsReturnsOnCall[i] = struct {
+		result1 bool
+	}{result1}
 }
 
 func (fake *FakeStorageInterface) Write(arg1 string, arg2 []byte) error {
@@ -93,6 +164,8 @@ func (fake *FakeStorageInterface) WriteReturnsOnCall(i int, result1 error) {
 func (fake *FakeStorageInterface) Invocations() map[string][][]interface{} {
 	fake.invocationsMutex.RLock()
 	defer fake.invocationsMutex.RUnlock()
+	fake.fileExistsMutex.RLock()
+	defer fake.fileExistsMutex.RUnlock()
 	fake.writeMutex.RLock()
 	defer fake.writeMutex.RUnlock()
 	copiedInvocations := map[string][][]interface{}{}

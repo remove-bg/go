@@ -16,6 +16,14 @@ type FakeNotifierInterface struct {
 		arg3 int
 		arg4 int
 	}
+	SkipStub        func(string, string, int, int)
+	skipMutex       sync.RWMutex
+	skipArgsForCall []struct {
+		arg1 string
+		arg2 string
+		arg3 int
+		arg4 int
+	}
 	SuccessStub        func(string, int, int)
 	successMutex       sync.RWMutex
 	successArgsForCall []struct {
@@ -61,6 +69,40 @@ func (fake *FakeNotifierInterface) ErrorArgsForCall(i int) (error, string, int, 
 	return argsForCall.arg1, argsForCall.arg2, argsForCall.arg3, argsForCall.arg4
 }
 
+func (fake *FakeNotifierInterface) Skip(arg1 string, arg2 string, arg3 int, arg4 int) {
+	fake.skipMutex.Lock()
+	fake.skipArgsForCall = append(fake.skipArgsForCall, struct {
+		arg1 string
+		arg2 string
+		arg3 int
+		arg4 int
+	}{arg1, arg2, arg3, arg4})
+	fake.recordInvocation("Skip", []interface{}{arg1, arg2, arg3, arg4})
+	fake.skipMutex.Unlock()
+	if fake.SkipStub != nil {
+		fake.SkipStub(arg1, arg2, arg3, arg4)
+	}
+}
+
+func (fake *FakeNotifierInterface) SkipCallCount() int {
+	fake.skipMutex.RLock()
+	defer fake.skipMutex.RUnlock()
+	return len(fake.skipArgsForCall)
+}
+
+func (fake *FakeNotifierInterface) SkipCalls(stub func(string, string, int, int)) {
+	fake.skipMutex.Lock()
+	defer fake.skipMutex.Unlock()
+	fake.SkipStub = stub
+}
+
+func (fake *FakeNotifierInterface) SkipArgsForCall(i int) (string, string, int, int) {
+	fake.skipMutex.RLock()
+	defer fake.skipMutex.RUnlock()
+	argsForCall := fake.skipArgsForCall[i]
+	return argsForCall.arg1, argsForCall.arg2, argsForCall.arg3, argsForCall.arg4
+}
+
 func (fake *FakeNotifierInterface) Success(arg1 string, arg2 int, arg3 int) {
 	fake.successMutex.Lock()
 	fake.successArgsForCall = append(fake.successArgsForCall, struct {
@@ -99,6 +141,8 @@ func (fake *FakeNotifierInterface) Invocations() map[string][][]interface{} {
 	defer fake.invocationsMutex.RUnlock()
 	fake.errorMutex.RLock()
 	defer fake.errorMutex.RUnlock()
+	fake.skipMutex.RLock()
+	defer fake.skipMutex.RUnlock()
 	fake.successMutex.RLock()
 	defer fake.successMutex.RUnlock()
 	copiedInvocations := map[string][][]interface{}{}

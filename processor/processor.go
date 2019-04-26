@@ -49,6 +49,12 @@ func (p Processor) Process(inputPaths []string, settings Settings) {
 
 	for index, inputPath := range inputPaths {
 		outputPath := DetermineOutputPath(inputPath, settings)
+
+		if p.Storage.FileExists(outputPath) {
+			p.Notifier.Skip(inputPath, outputPath, index+1, totalImages)
+			return
+		}
+
 		err := p.processFile(inputPath, outputPath, settings.ImageSettings)
 
 		if err == nil {
