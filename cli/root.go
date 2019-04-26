@@ -21,7 +21,7 @@ func Bootstrap() *cli.App {
 	app.Flags = []cli.Flag{
 		cli.StringFlag{
 			Name:   "api-key",
-			Usage:  "API key",
+			Usage:  "API key (required)",
 			EnvVar: "REMOVE_BG_API_KEY",
 		},
 		cli.StringFlag{
@@ -30,11 +30,11 @@ func Bootstrap() *cli.App {
 		},
 		cli.BoolFlag{
 			Name:  "reprocess-existing",
-			Usage: "Reprocess and overwrite images which have already been processed",
+			Usage: "Reprocess and overwrite any already processed images (default: false)",
 		},
 		cli.BoolFlag{
 			Name:  "skip-confirm-large-batch",
-			Usage: "Skip confirmation of large batch sizes",
+			Usage: "Skip confirmation of large batch sizes (default: false)",
 		},
 		cli.IntFlag{
 			Name:  "large-batch-confirm-threshold",
