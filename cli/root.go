@@ -40,6 +40,7 @@ func Bootstrap() *cli.App {
 		cli.StringFlag{
 			Name:  "size",
 			Usage: "Image size",
+			Value: "auto",
 		},
 		cli.StringFlag{
 			Name:  "type",
