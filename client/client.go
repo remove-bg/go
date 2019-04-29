@@ -2,6 +2,7 @@ package client
 
 import (
 	"bytes"
+	"encoding/json"
 	"errors"
 	"fmt"
 	"io"
@@ -10,6 +11,7 @@ import (
 	"net/http"
 	"os"
 	"path/filepath"
+	"strings"
 )
 
 const APIEndpoint = "https://api.remove.bg/v1.0/removebg"
@@ -37,11 +39,16 @@ func (c Client) RemoveFromFile(inputPath string, apiKey string, params map[strin
 
 	defer resp.Body.Close()
 
-	if resp.StatusCode != 200 {
+	statusCode := resp.StatusCode
+	body, err := ioutil.ReadAll(resp.Body)
+
+	if statusCode == 200 {
+		return body, err
+	} else if statusCode >= 400 && statusCode < 500 {
+		return nil, parseJsonErrors(body)
+	} else {
 		return nil, fmt.Errorf("Unable to process image http_status=%d", resp.StatusCode)
 	}
-
-	return ioutil.ReadAll(resp.Body)
 }
 
 func buildRequest(uri string, apiKey string, params map[string]string, inputPath string) (*http.Request, error) {
@@ -87,4 +94,25 @@ func buildRequest(uri string, apiKey string, params map[string]string, inputPath
 
 func userAgent() string {
 	return fmt.Sprintf("remove-bg-go-%s", Version)
+}
+
+func parseJsonErrors(body []byte) error {
+	parsedErrorResponse := jsonErrorResponse{}
+	err := json.Unmarshal(body, &parsedErrorResponse)
+	if err != nil {
+		return err
+	}
+
+	errorMessages := make([]string, len(parsedErrorResponse.Errors))
+	for i, e := range parsedErrorResponse.Errors {
+		errorMessages[i] = e.Title
+	}
+
+	return errors.New(strings.Join(errorMessages, ", "))
+}
+
+type jsonErrorResponse struct {
+	Errors []struct {
+		Title string
+	}
 }

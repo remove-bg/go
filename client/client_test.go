@@ -54,17 +54,32 @@ var _ = Describe("Client", func() {
 		Expect(gock.IsDone()).To(BeTrue())
 	})
 
-	Context("HTTP error", func() {
+	Context("server HTTP error", func() {
 		It("returns a clear error", func() {
 			gock.New("https://api.remove.bg").
 				Post("/v1.0/removebg").
-				MatchHeader("X-Api-Key", "^api-key$").
-				Reply(400)
+				Reply(500)
 
 			result, err := subject.RemoveFromFile(fixtureFile, "api-key", map[string]string{})
 
 			Expect(result).To(BeNil())
-			Expect(err).To(MatchError("Unable to process image http_status=400"))
+			Expect(err).To(MatchError("Unable to process image http_status=500"))
+		})
+	})
+
+	Context("client HTTP error", func() {
+		It("parses the JSON error messages", func() {
+			jsonError := `{"errors": [{"title": "File too large"}, {"title": "Second error"}]}`
+
+			gock.New("https://api.remove.bg").
+				Post("/v1.0/removebg").
+				Reply(400).
+				BodyString(jsonError)
+
+			result, err := subject.RemoveFromFile(fixtureFile, "api-key", map[string]string{})
+
+			Expect(result).To(BeNil())
+			Expect(err).To(MatchError("File too large, Second error"))
 		})
 	})
 
