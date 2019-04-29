@@ -32,13 +32,9 @@ func Bootstrap() *cli.App {
 			Name:  "reprocess-existing",
 			Usage: "Reprocess and overwrite any already processed images (default: false)",
 		},
-		cli.BoolFlag{
-			Name:  "skip-confirm-large-batch",
-			Usage: "Skip confirmation of large batch sizes (default: false)",
-		},
 		cli.IntFlag{
-			Name:  "large-batch-confirm-threshold",
-			Usage: "Threshold for large batch confirmation",
+			Name:  "confirm-batch-over",
+			Usage: "Confirm any batches over this size (-1 to disable)",
 			Value: defaultLargeBatchSize,
 		},
 		cli.StringFlag{
@@ -76,8 +72,7 @@ func Bootstrap() *cli.App {
 		s := processor.Settings{
 			OutputDirectory:            outputDirectory,
 			ReprocessExisting:          c.Bool("reprocess-existing"),
-			SkipConfirmLargeBatch:      c.Bool("skip-confirm-large-batch"),
-			LargeBatchConfirmThreshold: c.Int("large-batch-confirm-threshold"),
+			LargeBatchConfirmThreshold: c.Int("confirm-batch-over"),
 			ImageSettings: processor.ImageSettings{
 				Size:     c.String("size"),
 				Type:     c.String("type"),

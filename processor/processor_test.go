@@ -189,7 +189,6 @@ var _ = Describe("Processor", func() {
 	Describe("large batch confirmation", func() {
 		It("doesn't prompt under the limit", func() {
 			inputPaths := []string{"dir/image1.jpg"}
-			testSettings.SkipConfirmLargeBatch = false
 			testSettings.LargeBatchConfirmThreshold = 50
 
 			subject.Process(inputPaths, testSettings)
@@ -200,7 +199,6 @@ var _ = Describe("Processor", func() {
 		It("delegates to the prompt", func() {
 			fakePrompt.ConfirmLargeBatchReturns(true)
 			inputPaths := make([]string, 50)
-			testSettings.SkipConfirmLargeBatch = false
 			testSettings.LargeBatchConfirmThreshold = 50
 
 			subject.Process(inputPaths, testSettings)
@@ -209,10 +207,9 @@ var _ = Describe("Processor", func() {
 			Expect(fakeClient.RemoveFromFileCallCount()).To(Equal(50))
 		})
 
-		It("can be skipped", func() {
+		It("can be skipped with a negative value", func() {
 			inputPaths := make([]string, 50)
-			testSettings.SkipConfirmLargeBatch = true
-			testSettings.LargeBatchConfirmThreshold = 50
+			testSettings.LargeBatchConfirmThreshold = -1
 
 			subject.Process(inputPaths, testSettings)
 
@@ -223,7 +220,6 @@ var _ = Describe("Processor", func() {
 		It("can allows configuration of the threshold", func() {
 			fakePrompt.ConfirmLargeBatchReturns(true)
 			inputPaths := make([]string, 25)
-			testSettings.SkipConfirmLargeBatch = false
 			testSettings.LargeBatchConfirmThreshold = 25
 
 			subject.Process(inputPaths, testSettings)
@@ -235,7 +231,6 @@ var _ = Describe("Processor", func() {
 		It("doesn't process if the confirmation is rejected", func() {
 			fakePrompt.ConfirmLargeBatchReturns(false)
 			inputPaths := make([]string, 50)
-			testSettings.SkipConfirmLargeBatch = false
 			testSettings.LargeBatchConfirmThreshold = 50
 
 			subject.Process(inputPaths, testSettings)

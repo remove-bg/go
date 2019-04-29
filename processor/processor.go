@@ -16,7 +16,6 @@ type Processor struct {
 type Settings struct {
 	OutputDirectory            string
 	ReprocessExisting          bool
-	SkipConfirmLargeBatch      bool
 	LargeBatchConfirmThreshold int
 	ImageSettings              ImageSettings
 }
@@ -103,9 +102,9 @@ func imageSettingsToParams(imageSettings ImageSettings) map[string]string {
 
 func (p Processor) confirmLargeBatch(inputPaths []string, settings Settings) bool {
 	batchSize := len(inputPaths)
-	overThreshold := batchSize < settings.LargeBatchConfirmThreshold
+	skipConfirm := settings.LargeBatchConfirmThreshold < 0
 
-	if overThreshold || settings.SkipConfirmLargeBatch {
+	if skipConfirm || batchSize < settings.LargeBatchConfirmThreshold {
 		return true
 	}
 
