@@ -54,7 +54,7 @@ func (p Processor) Process(inputPaths []string, settings Settings) {
 
 		if skipImage {
 			p.Notifier.Skip(inputPath, outputPath, index+1, totalImages)
-			return
+			continue
 		}
 
 		err := p.processFile(inputPath, outputPath, settings.ImageSettings)

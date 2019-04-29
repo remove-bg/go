@@ -160,20 +160,23 @@ var _ = Describe("Processor", func() {
 	Describe("skipping already processed files", func() {
 		It("skips processing if the output file exists", func() {
 			testSettings.OutputDirectory = ""
-			inputPaths := []string{"dir/image1.jpg"}
-			fakeStorage.FileExistsReturns(true)
+			inputPaths := []string{"dir/image1.jpg", "dir/image2.jpg"}
+			fakeStorage.FileExistsReturnsOnCall(0, true)
+			fakeStorage.FileExistsReturnsOnCall(1, false)
 
 			subject.Process(inputPaths, testSettings)
 
-			Expect(fakeClient.RemoveFromFileCallCount()).To(Equal(0))
 			Expect(fakeNotifier.SkipCallCount()).To(Equal(1))
+			Expect(fakeClient.RemoveFromFileCallCount()).To(Equal(1))
 
 			notifiedInput, notifiedOutput, notifiedImageNumber, notifiedTotal := fakeNotifier.SkipArgsForCall(0)
-
 			Expect(notifiedInput).To(Equal("dir/image1.jpg"))
 			Expect(notifiedOutput).To(Equal("dir/image1-removebg.png"))
 			Expect(notifiedImageNumber).To(Equal(1))
-			Expect(notifiedTotal).To(Equal(1))
+			Expect(notifiedTotal).To(Equal(2))
+
+			processedPath, _, _ := fakeClient.RemoveFromFileArgsForCall(0)
+			Expect(processedPath).To(Equal("dir/image2.jpg"))
 		})
 
 		It("can be configured to force re-processing of existing files", func() {
