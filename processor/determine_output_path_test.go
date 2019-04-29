@@ -31,4 +31,19 @@ var _ = Describe("DetermineOutputPath", func() {
 			Expect(result).To(Equal("in/nested/image-removebg.png"))
 		})
 	})
+
+	Context("when the output format is set", func() {
+		It("is used as the file extension", func() {
+			settings := Settings{
+				OutputDirectory: "out",
+				ImageSettings: ImageSettings{
+					Format: "jpg",
+				},
+			}
+
+			result := DetermineOutputPath("in/nested/image.jpg", settings)
+
+			Expect(result).To(Equal("out/image.jpg"))
+		})
+	})
 })

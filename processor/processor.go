@@ -25,6 +25,7 @@ type ImageSettings struct {
 	Type     string
 	Channels string
 	BgColor  string
+	Format   string
 }
 
 func NewProcessor(apiKey string) Processor {
@@ -95,6 +96,10 @@ func imageSettingsToParams(imageSettings ImageSettings) map[string]string {
 
 	if len(imageSettings.BgColor) > 0 {
 		params["bg_color"] = imageSettings.BgColor
+	}
+
+	if len(imageSettings.Format) > 0 {
+		params["format"] = imageSettings.Format
 	}
 
 	return params

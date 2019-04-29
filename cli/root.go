@@ -54,6 +54,11 @@ func Bootstrap() *cli.App {
 			Name:  "bg-color",
 			Usage: "Image background color",
 		},
+		cli.StringFlag{
+			Name:  "format",
+			Usage: "Image format",
+			Value: "png",
+		},
 	}
 
 	app.Action = func(c *cli.Context) error {
@@ -79,6 +84,7 @@ func Bootstrap() *cli.App {
 				Type:     c.String("type"),
 				Channels: c.String("channels"),
 				BgColor:  c.String("bg-color"),
+				Format:   c.String("format"),
 			},
 		}
 

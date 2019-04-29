@@ -72,6 +72,7 @@ var _ = Describe("Processor", func() {
 			Type:     "type-value",
 			Channels: "channels-value",
 			BgColor:  "bg-color-value",
+			Format:   "format-value",
 		}
 
 		subject.Process(inputPaths, testSettings)
@@ -83,6 +84,7 @@ var _ = Describe("Processor", func() {
 		Expect(params["type"]).To(Equal("type-value"))
 		Expect(params["channels"]).To(Equal("channels-value"))
 		Expect(params["bg_color"]).To(Equal("bg-color-value"))
+		Expect(params["format"]).To(Equal("format-value"))
 	})
 
 	Context("client error", func() {
