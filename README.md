@@ -4,11 +4,8 @@
 
 ## CLI usage
 
-After installation, you can view the CLI help by typing the following in your
-terminal:
-
 ```
-removebg --help
+removebg [options] <file>...
 ```
 
 ### API key
@@ -96,14 +93,14 @@ processed/
 - `--output-directory` (optional) - The output directory for processed images.
 
 - `--reprocess-existing` - Images which have already been processed are skipped
-by default to save credits. Add this flag to force reprocessing.
+by default to save credits. Specify this flag to force reprocessing.
 
 - `--confirm-batch-over` (default `50`) - Prompt for confirmation before
 processing batches over this size. Specify `-1` to disable this safeguard.
 
 #### Image processing options
 
-Please see the [API documentation][api-docs] for further details
+Please see the [API documentation][api-docs] for further details.
 
 [api-docs]: https://www.remove.bg/api#operations-tag-Background%20Removal
 
