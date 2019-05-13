@@ -2,6 +2,12 @@
 
 [![CircleCI](https://circleci.com/gh/remove-bg/go.svg?style=shield)](https://circleci.com/gh/remove-bg/go)
 
+## Download
+
+**[Download latest stable release](https://github.com/remove-bg/go/releases)** (Windows, Mac, Linux)
+
+
+
 ## CLI usage
 
 ```
