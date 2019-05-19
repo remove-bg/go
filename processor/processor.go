@@ -2,6 +2,7 @@ package processor
 
 import (
 	"github.com/remove-bg/go/client"
+	"log"
 	"net/http"
 )
 
@@ -40,7 +41,12 @@ func NewProcessor(apiKey string) Processor {
 	}
 }
 
-func (p Processor) Process(inputPaths []string, settings Settings) {
+func (p Processor) Process(rawInputPaths []string, settings Settings) {
+	inputPaths, err := p.Storage.ExpandPaths(rawInputPaths)
+	if err != nil {
+		log.Fatal(err)
+	}
+
 	confirmation := p.confirmLargeBatch(inputPaths, settings)
 	if !confirmation {
 		return

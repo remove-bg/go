@@ -25,6 +25,9 @@ var _ = Describe("Processor", func() {
 		fakePrompt = &processorfakes.FakePromptInterface{}
 		fakeNotifier = &processorfakes.FakeNotifierInterface{}
 		fakePrompt.ConfirmLargeBatchReturns(true)
+		fakeStorage.ExpandPathsStub = func(input []string) ([]string, error) {
+			return input, nil
+		}
 
 		subject = processor.Processor{
 			APIKey:   "api-key",
@@ -39,6 +42,20 @@ var _ = Describe("Processor", func() {
 			LargeBatchConfirmThreshold: 50,
 			ReprocessExisting:          false,
 		}
+	})
+
+	It("expands globs in the input paths", func() {
+		fakeStorage.ExpandPathsStub = func(input []string) ([]string, error) {
+			return []string{"dir/image1.jpg"}, nil
+		}
+
+		subject.Process([]string{"dir/*.jpg"}, testSettings)
+
+		Expect(fakeClient.RemoveFromFileCallCount()).To(Equal(1))
+		Expect(fakeStorage.ExpandPathsCallCount()).To(Equal(1))
+
+		clientArg1, _, _ := fakeClient.RemoveFromFileArgsForCall(0)
+		Expect(clientArg1).To(Equal("dir/image1.jpg"))
 	})
 
 	It("coordinates the HTTP request and writing the result", func() {

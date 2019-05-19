@@ -8,6 +8,19 @@ import (
 )
 
 type FakeStorageInterface struct {
+	ExpandPathsStub        func([]string) ([]string, error)
+	expandPathsMutex       sync.RWMutex
+	expandPathsArgsForCall []struct {
+		arg1 []string
+	}
+	expandPathsReturns struct {
+		result1 []string
+		result2 error
+	}
+	expandPathsReturnsOnCall map[int]struct {
+		result1 []string
+		result2 error
+	}
 	FileExistsStub        func(string) bool
 	fileExistsMutex       sync.RWMutex
 	fileExistsArgsForCall []struct {
@@ -33,6 +46,74 @@ type FakeStorageInterface struct {
 	}
 	invocations      map[string][][]interface{}
 	invocationsMutex sync.RWMutex
+}
+
+func (fake *FakeStorageInterface) ExpandPaths(arg1 []string) ([]string, error) {
+	var arg1Copy []string
+	if arg1 != nil {
+		arg1Copy = make([]string, len(arg1))
+		copy(arg1Copy, arg1)
+	}
+	fake.expandPathsMutex.Lock()
+	ret, specificReturn := fake.expandPathsReturnsOnCall[len(fake.expandPathsArgsForCall)]
+	fake.expandPathsArgsForCall = append(fake.expandPathsArgsForCall, struct {
+		arg1 []string
+	}{arg1Copy})
+	fake.recordInvocation("ExpandPaths", []interface{}{arg1Copy})
+	fake.expandPathsMutex.Unlock()
+	if fake.ExpandPathsStub != nil {
+		return fake.ExpandPathsStub(arg1)
+	}
+	if specificReturn {
+		return ret.result1, ret.result2
+	}
+	fakeReturns := fake.expandPathsReturns
+	return fakeReturns.result1, fakeReturns.result2
+}
+
+func (fake *FakeStorageInterface) ExpandPathsCallCount() int {
+	fake.expandPathsMutex.RLock()
+	defer fake.expandPathsMutex.RUnlock()
+	return len(fake.expandPathsArgsForCall)
+}
+
+func (fake *FakeStorageInterface) ExpandPathsCalls(stub func([]string) ([]string, error)) {
+	fake.expandPathsMutex.Lock()
+	defer fake.expandPathsMutex.Unlock()
+	fake.ExpandPathsStub = stub
+}
+
+func (fake *FakeStorageInterface) ExpandPathsArgsForCall(i int) []string {
+	fake.expandPathsMutex.RLock()
+	defer fake.expandPathsMutex.RUnlock()
+	argsForCall := fake.expandPathsArgsForCall[i]
+	return argsForCall.arg1
+}
+
+func (fake *FakeStorageInterface) ExpandPathsReturns(result1 []string, result2 error) {
+	fake.expandPathsMutex.Lock()
+	defer fake.expandPathsMutex.Unlock()
+	fake.ExpandPathsStub = nil
+	fake.expandPathsReturns = struct {
+		result1 []string
+		result2 error
+	}{result1, result2}
+}
+
+func (fake *FakeStorageInterface) ExpandPathsReturnsOnCall(i int, result1 []string, result2 error) {
+	fake.expandPathsMutex.Lock()
+	defer fake.expandPathsMutex.Unlock()
+	fake.ExpandPathsStub = nil
+	if fake.expandPathsReturnsOnCall == nil {
+		fake.expandPathsReturnsOnCall = make(map[int]struct {
+			result1 []string
+			result2 error
+		})
+	}
+	fake.expandPathsReturnsOnCall[i] = struct {
+		result1 []string
+		result2 error
+	}{result1, result2}
 }
 
 func (fake *FakeStorageInterface) FileExists(arg1 string) bool {
@@ -164,6 +245,8 @@ func (fake *FakeStorageInterface) WriteReturnsOnCall(i int, result1 error) {
 func (fake *FakeStorageInterface) Invocations() map[string][][]interface{} {
 	fake.invocationsMutex.RLock()
 	defer fake.invocationsMutex.RUnlock()
+	fake.expandPathsMutex.RLock()
+	defer fake.expandPathsMutex.RUnlock()
 	fake.fileExistsMutex.RLock()
 	defer fake.fileExistsMutex.RUnlock()
 	fake.writeMutex.RLock()
