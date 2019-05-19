@@ -78,5 +78,17 @@ var _ = Describe("FileStorage", func() {
 			Expect(err).ToNot(HaveOccurred())
 			Expect(expanded).To(Equal(originals))
 		})
+
+		Context("input path isn't a glob", func() {
+			// We want non-existent paths to remain, so we don't fail silently
+			It("doesn't strip non-existent files", func() {
+				inputPath := "missing/foo/bar.jpg"
+				originals := []string{inputPath}
+				expanded, err := subject.ExpandPaths(originals)
+
+				Expect(err).ToNot(HaveOccurred())
+				Expect(expanded).To(Equal(originals))
+			})
+		})
 	})
 })

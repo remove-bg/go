@@ -3,6 +3,7 @@ package processor
 import (
 	"github.com/bmatcuk/doublestar"
 	"os"
+	"strings"
 )
 
 //go:generate counterfeiter . StorageInterface
@@ -35,6 +36,11 @@ func (FileStorage) ExpandPaths(originalPaths []string) ([]string, error) {
 	resolvedPaths := []string{}
 
 	for _, originalPath := range originalPaths {
+		if !strings.Contains(originalPath, "*") {
+			resolvedPaths = append(resolvedPaths, originalPath)
+			continue
+		}
+
 		expanded, err := doublestar.Glob(originalPath)
 
 		if err != nil {
