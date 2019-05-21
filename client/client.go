@@ -15,7 +15,7 @@ import (
 )
 
 const APIEndpoint = "https://api.remove.bg/v1.0/removebg"
-const Version = "1.0.0"
+const Version = "1.1.0"
 
 //go:generate counterfeiter . ClientInterface
 type ClientInterface interface {
