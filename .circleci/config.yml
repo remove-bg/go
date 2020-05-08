@@ -4,9 +4,7 @@ jobs:
   build:
     docker:
       - image: circleci/golang:1.14
-    working_directory: /home/circleci/go/src/github.com/remove-bg/go
-    environment:
-      GOPATH: /home/circleci/go
+    working_directory: /go/src/github.com/remove-bg/go
     steps:
       - checkout
       - run: echo 'export PATH=$GOPATH/bin:$PATH' >> "$BASH_ENV"

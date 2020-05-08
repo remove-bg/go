@@ -7,34 +7,21 @@ import (
 	"github.com/onsi/gomega/gbytes"
 	"github.com/onsi/gomega/gexec"
 	"io"
-	"log"
+	"io/ioutil"
 	"os"
 	"os/exec"
 	"path"
 	"runtime"
 )
 
-var _ = Describe("Remove.bg CLI: Composite command", func() {
+var _ = Describe("Remove.bg CLI: zip2png command", func() {
 	var (
 		exampleZip    string
 		referencePath string
 		outputPath    string
 		testDir       string
-		cliPath       string
+		tmpOutputDir  string
 	)
-
-	BeforeSuite(func() {
-		var err error
-		cliPath, err = gexec.Build("github.com/remove-bg/go")
-
-		log.Printf("CLI: %s", cliPath)
-
-		Expect(err).ShouldNot(HaveOccurred())
-	})
-
-	AfterSuite(func() {
-		gexec.CleanupBuildArtifacts()
-	})
 
 	BeforeEach(func() {
 		_, testFile, _, _ := runtime.Caller(0)
@@ -46,11 +33,12 @@ var _ = Describe("Remove.bg CLI: Composite command", func() {
 		referencePath = path.Join(testDir, "fixtures/zip/reference-example-cat.png")
 		Expect(referencePath).To(BeAnExistingFile())
 
-		outputPath = path.Join(testDir, "tmp/composite-cat.png")
+		tmpOutputDir, _ = ioutil.TempDir("", "removeBG-*")
+		outputPath = path.Join(tmpOutputDir, "cat-composite.png")
+	})
 
-		// Remove stale state from any previous test runs
-		os.Remove(outputPath)
-		Expect(outputPath).ToNot(BeAnExistingFile())
+	AfterEach(func() {
+		os.RemoveAll(tmpOutputDir)
 	})
 
 	It("combines the color.jpg and alpha.png into a transparent PNG", func() {
