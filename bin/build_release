@@ -17,8 +17,5 @@ GOOS=windows go build -o "$SANDBOX/removebg.exe" $PACKAGE
 printf "\nBuild summary:\n"
 find "$SANDBOX" -type f -exec file {} \;
 
-printf "\nSHA-1 digests for CF cli plugin repo:\n"
-shasum $SANDBOX/removebg*
-
 printf "\nBinaries are located here:\n$SANDBOX\n"
 open "$SANDBOX"
