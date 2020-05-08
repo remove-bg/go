@@ -10,11 +10,14 @@ import (
 	"image/color"
 	"image/jpeg"
 	"image/png"
+	"io"
 )
 
 type Composite struct {
 	Storage storage.StorageInterface
 }
+
+type imageDecoder = func(io.Reader) (image.Image, error)
 
 func New() Composite {
 	return Composite{
@@ -22,15 +25,15 @@ func New() Composite {
 	}
 }
 
-func (c Composite) Process(inputPath string, outputPath string) error {
+func (c Composite) Process(inputZipPath string, outputImagePath string) error {
 	fmt.Println("Extracting...")
-	rgb, alpha := readZip(inputPath)
+	rgb, alpha, _ := extractImagesFromZip(inputZipPath)
 
 	fmt.Println("Compositing...")
 	composited := composite(rgb, alpha)
 
 	fmt.Println("Saving...")
-	c.savePng(composited, outputPath)
+	c.savePng(composited, outputImagePath)
 
 	return nil
 }
@@ -41,46 +44,43 @@ func (c Composite) savePng(image *image.NRGBA, outputPath string) {
 	c.Storage.Write(outputPath, buf.Bytes())
 }
 
-func readZip(filename string) (rgb image.Image, alpha image.Image) {
-	r, err := zip.OpenReader(filename)
-	defer r.Close()
+const zipColorImageFileName = "color.jpg"
+const zipAlphaImageFileName = "alpha.png"
+
+func extractImagesFromZip(filename string) (rgb image.Image, alpha image.Image, err error) {
+	archive, err := zip.OpenReader(filename)
+	defer archive.Close()
+
+	rgb, err = decodeZipImage(archive, zipColorImageFileName, jpeg.Decode)
 
 	if err != nil {
-		// TODO
+		return nil, nil, err
 	}
 
-	for _, f := range r.File {
-		if f.Name == "color.jpg" {
+	alpha, err = decodeZipImage(archive, zipAlphaImageFileName, png.Decode)
+
+	if err != nil {
+		return nil, nil, err
+	}
+
+	return rgb, alpha, nil
+}
+
+func decodeZipImage(archive *zip.ReadCloser, fileName string, decoder imageDecoder) (image.Image, error) {
+	for _, f := range archive.File {
+		if f.Name == fileName {
 			rc, err := f.Open()
-			if err != nil {
-				// TODO
-			}
-
-			rgb, err = jpeg.Decode(rc)
+			defer rc.Close()
 
 			if err != nil {
-				// TODO
+				return nil, err
 			}
 
-			rc.Close()
-		}
-
-		if f.Name == "alpha.png" {
-			rc, err := f.Open()
-			if err != nil {
-				// TODO
-			}
-
-			alpha, err = png.Decode(rc)
-			if err != nil {
-				// TODO
-			}
-
-			rc.Close()
+			return decoder(rc)
 		}
 	}
 
-	return rgb, alpha
+	return nil, fmt.Errorf("Unable to find image in ZIP: %s", fileName)
 }
 
 func composite(rgb image.Image, alpha image.Image) *image.NRGBA {
