@@ -2,8 +2,10 @@ package cli
 
 import (
 	"github.com/remove-bg/go/client"
+	"github.com/remove-bg/go/composite"
 	"github.com/remove-bg/go/processor"
 	"github.com/urfave/cli"
+	"log"
 )
 
 const defaultLargeBatchSize = 50
@@ -58,6 +60,28 @@ func Bootstrap() *cli.App {
 			Name:  "format",
 			Usage: "Image format",
 			Value: "png",
+		},
+	}
+
+	app.Commands = []cli.Command{
+		{
+			Name:      "zip2png",
+			Usage:     "Converts a remove.bg ZIP to a PNG",
+			ArgsUsage: "<input.zip> <output_path.png>",
+			Action: func(c *cli.Context) error {
+				inputZipPath := c.Args().First()
+				outputImagePath := c.Args()[1]
+				composite := composite.New()
+
+				err := composite.Process(inputZipPath, outputImagePath)
+
+				if err != nil {
+					return err
+				}
+
+				log.Printf("Processed zip: %s -> %s\n", inputZipPath, outputImagePath)
+				return nil
+			},
 		},
 	}
 

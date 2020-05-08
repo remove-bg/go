@@ -7,12 +7,13 @@ import (
 	"github.com/remove-bg/go/client/clientfakes"
 	"github.com/remove-bg/go/processor"
 	"github.com/remove-bg/go/processor/processorfakes"
+	"github.com/remove-bg/go/storage/storagefakes"
 )
 
 var _ = Describe("Processor", func() {
 	var (
 		fakeClient   *clientfakes.FakeClientInterface
-		fakeStorage  *processorfakes.FakeStorageInterface
+		fakeStorage  *storagefakes.FakeStorageInterface
 		fakePrompt   *processorfakes.FakePromptInterface
 		fakeNotifier *processorfakes.FakeNotifierInterface
 		subject      processor.Processor
@@ -21,7 +22,7 @@ var _ = Describe("Processor", func() {
 
 	BeforeEach(func() {
 		fakeClient = &clientfakes.FakeClientInterface{}
-		fakeStorage = &processorfakes.FakeStorageInterface{}
+		fakeStorage = &storagefakes.FakeStorageInterface{}
 		fakePrompt = &processorfakes.FakePromptInterface{}
 		fakeNotifier = &processorfakes.FakeNotifierInterface{}
 		fakePrompt.ConfirmLargeBatchReturns(true)
