@@ -124,7 +124,7 @@ Please see the [API documentation][api-docs] for further details.
 
 Prerequisites:
 
-- `go 1.12`
+- `go 1.14`
 - [`dep`](https://golang.github.io/dep/)
 
 Getting started:

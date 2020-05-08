@@ -3,7 +3,7 @@ version: 2
 jobs:
   build:
     docker:
-      - image: circleci/golang:1.12
+      - image: circleci/golang:1.14
     working_directory: /home/circleci/go/src/github.com/remove-bg/go
     environment:
       GOPATH: /home/circleci/go
