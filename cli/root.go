@@ -2,6 +2,7 @@ package cli
 
 import (
 	"github.com/remove-bg/go/client"
+	"github.com/remove-bg/go/composite"
 	"github.com/remove-bg/go/processor"
 	"github.com/urfave/cli"
 )
@@ -58,6 +59,18 @@ func Bootstrap() *cli.App {
 			Name:  "format",
 			Usage: "Image format",
 			Value: "png",
+		},
+	}
+
+	app.Commands = []cli.Command{
+		{
+			Name:      "zip2png",
+			Usage:     "Converts a remove.bg ZIP to a PNG",
+			ArgsUsage: "<input.zip> <output_path.png>",
+			Action: func(c *cli.Context) error {
+				composite.Process(c.Args().First(), c.Args()[1])
+				return nil
+			},
 		},
 	}
 
