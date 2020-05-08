@@ -1,4 +1,4 @@
-package processor_test
+package storage_test
 
 import (
 	. "github.com/onsi/ginkgo"
@@ -7,7 +7,7 @@ import (
 	"path"
 	"runtime"
 
-	. "github.com/remove-bg/go/processor"
+	. "github.com/remove-bg/go/storage"
 )
 
 var _ = Describe("FileStorage", func() {

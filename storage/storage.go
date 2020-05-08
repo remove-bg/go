@@ -1,4 +1,4 @@
-package processor
+package storage
 
 import (
 	"github.com/bmatcuk/doublestar"

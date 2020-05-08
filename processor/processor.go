@@ -2,6 +2,7 @@ package processor
 
 import (
 	"github.com/remove-bg/go/client"
+	"github.com/remove-bg/go/storage"
 	"log"
 	"net/http"
 )
@@ -9,7 +10,7 @@ import (
 type Processor struct {
 	APIKey   string
 	Client   client.ClientInterface
-	Storage  StorageInterface
+	Storage  storage.StorageInterface
 	Prompt   PromptInterface
 	Notifier NotifierInterface
 }
@@ -35,7 +36,7 @@ func NewProcessor(apiKey string) Processor {
 		Client: client.Client{
 			HTTPClient: http.Client{},
 		},
-		Storage:  FileStorage{},
+		Storage:  storage.FileStorage{},
 		Prompt:   Prompt{},
 		Notifier: NewNotifier(),
 	}

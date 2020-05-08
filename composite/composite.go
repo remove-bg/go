@@ -1,38 +1,53 @@
 package composite
 
 import (
+	"github.com/remove-bg/go/storage"
+
 	"archive/zip"
+	"bytes"
 	"fmt"
 	"image"
 	"image/color"
 	"image/jpeg"
 	"image/png"
-	"os"
 )
 
-func Process(inputPath string, outputPath string) error {
+type Composite struct {
+	Storage storage.StorageInterface
+}
+
+func New() Composite {
+	return Composite{
+		Storage: storage.FileStorage{},
+	}
+}
+
+func (c Composite) Process(inputPath string, outputPath string) error {
 	fmt.Println("Extracting...")
-	rgb, alpha := readZIP(inputPath)
+	rgb, alpha := readZip(inputPath)
 
 	fmt.Println("Compositing...")
 	composited := composite(rgb, alpha)
 
 	fmt.Println("Saving...")
-	savePNG(composited, outputPath)
+	c.savePng(composited, outputPath)
 
 	return nil
 }
 
-func readZIP(filename string) (image.Image, image.Image) {
+func (c Composite) savePng(image *image.NRGBA, outputPath string) {
+	buf := new(bytes.Buffer)
+	png.Encode(buf, image)
+	c.Storage.Write(outputPath, buf.Bytes())
+}
+
+func readZip(filename string) (rgb image.Image, alpha image.Image) {
 	r, err := zip.OpenReader(filename)
 	defer r.Close()
 
 	if err != nil {
 		// TODO
 	}
-
-	var rgb image.Image
-	var alpha image.Image
 
 	for _, f := range r.File {
 		if f.Name == "color.jpg" {
@@ -88,14 +103,4 @@ func composite(rgb image.Image, alpha image.Image) *image.NRGBA {
 	}
 
 	return composited
-}
-
-func savePNG(image *image.NRGBA, filename string) {
-	outputFile, err := os.Create(filename)
-	defer outputFile.Close()
-
-	if err != nil {
-		// TODO
-	}
-	png.Encode(outputFile, image)
 }

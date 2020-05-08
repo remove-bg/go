@@ -68,6 +68,7 @@ func Bootstrap() *cli.App {
 			Usage:     "Converts a remove.bg ZIP to a PNG",
 			ArgsUsage: "<input.zip> <output_path.png>",
 			Action: func(c *cli.Context) error {
+				composite := composite.New()
 				composite.Process(c.Args().First(), c.Args()[1])
 				return nil
 			},
