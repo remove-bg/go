@@ -15,12 +15,15 @@ func TestClient(t *testing.T) {
 
 var cliPath string
 
-var _ = BeforeSuite(func() {
+var _ = SynchronizedBeforeSuite(func() []byte {
 	var err error
-	cliPath, err = gexec.Build("github.com/remove-bg/go")
+	path, err := gexec.Build("github.com/remove-bg/go")
 	Expect(err).ShouldNot(HaveOccurred())
+	return []byte(path)
+}, func(data []byte) {
+	cliPath = string(data)
 })
 
-var _ = AfterSuite(func() {
+var _ = SynchronizedAfterSuite(func() {
 	gexec.CleanupBuildArtifacts()
-})
+}, func() {})
