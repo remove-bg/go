@@ -13,7 +13,7 @@ import (
 
 var _ = Describe("Composite", func() {
 	var (
-		subject    composite.Composite
+		subject    composite.Compositor
 		exampleZip string
 		outputPath string
 		testDir    string

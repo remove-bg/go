@@ -13,19 +13,19 @@ import (
 	"io"
 )
 
-type Composite struct {
+type Compositor struct {
 	Storage storage.StorageInterface
 }
 
 type imageDecoder = func(io.Reader) (image.Image, error)
 
-func New() Composite {
-	return Composite{
+func New() Compositor {
+	return Compositor{
 		Storage: storage.FileStorage{},
 	}
 }
 
-func (c Composite) Process(inputZipPath string, outputImagePath string) error {
+func (c Compositor) Process(inputZipPath string, outputImagePath string) error {
 	if !c.Storage.FileExists(inputZipPath) {
 		return fmt.Errorf("Could not locate zip: %s", inputZipPath)
 	}
@@ -43,7 +43,7 @@ func (c Composite) Process(inputZipPath string, outputImagePath string) error {
 	return nil
 }
 
-func (c Composite) savePng(image *image.NRGBA, outputPath string) {
+func (c Compositor) savePng(image *image.NRGBA, outputPath string) {
 	buf := new(bytes.Buffer)
 	png.Encode(buf, image)
 	c.Storage.Write(outputPath, buf.Bytes())
