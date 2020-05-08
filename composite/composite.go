@@ -89,7 +89,6 @@ func composite(rgb image.Image, alpha image.Image) *image.NRGBA {
 	height := dimensions.Y
 
 	composited := image.NewNRGBA(image.Rect(0, 0, width, height))
-
 	colorModel := composited.ColorModel()
 
 	for x := 0; x < width; x++ {
