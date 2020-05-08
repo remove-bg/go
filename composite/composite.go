@@ -26,13 +26,18 @@ func New() Composite {
 }
 
 func (c Composite) Process(inputZipPath string, outputImagePath string) error {
-	fmt.Println("Extracting...")
-	rgb, alpha, _ := extractImagesFromZip(inputZipPath)
+	if !c.Storage.FileExists(inputZipPath) {
+		return fmt.Errorf("Could not locate zip: %s", inputZipPath)
+	}
 
-	fmt.Println("Compositing...")
+	rgb, alpha, err := extractImagesFromZip(inputZipPath)
+
+	if err != nil {
+		return err
+	}
+
 	composited := composite(rgb, alpha)
 
-	fmt.Println("Saving...")
 	c.savePng(composited, outputImagePath)
 
 	return nil
@@ -49,16 +54,18 @@ const zipAlphaImageFileName = "alpha.png"
 
 func extractImagesFromZip(filename string) (rgb image.Image, alpha image.Image, err error) {
 	archive, err := zip.OpenReader(filename)
-	defer archive.Close()
-
-	rgb, err = decodeZipImage(archive, zipColorImageFileName, jpeg.Decode)
-
 	if err != nil {
 		return nil, nil, err
 	}
 
-	alpha, err = decodeZipImage(archive, zipAlphaImageFileName, png.Decode)
+	defer archive.Close()
 
+	alpha, err = decodeZipImage(archive, zipAlphaImageFileName, png.Decode)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	rgb, err = decodeZipImage(archive, zipColorImageFileName, jpeg.Decode)
 	if err != nil {
 		return nil, nil, err
 	}

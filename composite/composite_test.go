@@ -19,13 +19,14 @@ var _ = Describe("Composite", func() {
 		exampleZip    string
 		referencePath string
 		outputPath    string
+		testDir       string
 	)
 
 	BeforeEach(func() {
 		subject = composite.New()
 
 		_, testFile, _, _ := runtime.Caller(0)
-		testDir := path.Dir(testFile)
+		testDir = path.Dir(testFile)
 
 		exampleZip = path.Join(testDir, "../fixtures/zip/example-cat.zip")
 		referencePath = path.Join(testDir, "../fixtures/zip/reference-example-cat.png")
@@ -45,6 +46,35 @@ var _ = Describe("Composite", func() {
 		referenceSha := fileSha(referencePath)
 
 		Expect(outputSha).To(Equal(referenceSha), "Expected output composite to match reference composite")
+	})
+
+	Context("when the input zip does not exist", func() {
+		It("returns an error", func() {
+			Expect(subject.Process("missing.zip", outputPath)).To(MatchError("Could not locate zip: missing.zip"))
+		})
+
+		It("does not write any output", func() {
+			Expect(subject.Process("missing.zip", outputPath)).To(HaveOccurred())
+			Expect(outputPath).ToNot(BeAnExistingFile())
+		})
+	})
+
+	Context("when color.jpg does not exist in the input zip", func() {
+		It("returns an error", func() {
+			exampleZip = path.Join(testDir, "../fixtures/zip/example-missing-color.zip")
+			Expect(exampleZip).To(BeAnExistingFile())
+
+			Expect(subject.Process(exampleZip, outputPath)).To(MatchError("Unable to find image in ZIP: color.jpg"))
+		})
+	})
+
+	Context("when alpha.png does not exist in the input zip", func() {
+		It("returns an error", func() {
+			exampleZip = path.Join(testDir, "../fixtures/zip/example-missing-alpha.zip")
+			Expect(exampleZip).To(BeAnExistingFile())
+
+			Expect(subject.Process(exampleZip, outputPath)).To(MatchError("Unable to find image in ZIP: alpha.png"))
+		})
 	})
 })
 
