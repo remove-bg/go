@@ -16,6 +16,8 @@ import (
 
 const APIEndpoint = "https://api.remove.bg/v1.0/removebg"
 const Version = "1.1.0"
+const imageFileParam = "image_file"
+const bgImageFileParam = "bg_image_file"
 
 //go:generate counterfeiter . ClientInterface
 type ClientInterface interface {
@@ -55,9 +57,17 @@ func buildRequest(uri string, apiKey string, params map[string]string, inputPath
 	body := &bytes.Buffer{}
 	writer := multipart.NewWriter(body)
 
-	err := attachFile(writer, "image_file", inputPath)
+	err := attachFile(writer, imageFileParam, inputPath)
 	if err != nil {
 		return nil, err
+	}
+
+	if len(params[bgImageFileParam]) > 0 {
+		err := attachFile(writer, bgImageFileParam, params[bgImageFileParam])
+		if err != nil {
+			return nil, err
+		}
+		delete(params, bgImageFileParam)
 	}
 
 	for key, val := range params {

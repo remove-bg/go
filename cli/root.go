@@ -57,6 +57,10 @@ func Bootstrap() *cli.App {
 			Usage: "Image background color",
 		},
 		cli.StringFlag{
+			Name:  "bg-image-file",
+			Usage: "Adds a background image from a file",
+		},
+		cli.StringFlag{
 			Name:  "format",
 			Usage: "Image format",
 			Value: "png",
@@ -104,11 +108,12 @@ func Bootstrap() *cli.App {
 			ReprocessExisting:          c.Bool("reprocess-existing"),
 			LargeBatchConfirmThreshold: c.Int("confirm-batch-over"),
 			ImageSettings: processor.ImageSettings{
-				Size:     c.String("size"),
-				Type:     c.String("type"),
-				Channels: c.String("channels"),
-				BgColor:  c.String("bg-color"),
-				Format:   c.String("format"),
+				Size:        c.String("size"),
+				Type:        c.String("type"),
+				Channels:    c.String("channels"),
+				BgColor:     c.String("bg-color"),
+				BgImageFile: c.String("bg-image-file"),
+				Format:      c.String("format"),
 			},
 		}
 

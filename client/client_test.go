@@ -13,13 +13,15 @@ import (
 
 var _ = Describe("Client", func() {
 	var (
-		fixtureFile string
-		subject     client.Client
+		fixtureFile   string
+		bgFixtureFile string
+		subject       client.Client
 	)
 
 	BeforeEach(func() {
 		_, testFile, _, _ := runtime.Caller(0)
 		fixtureFile = path.Join(path.Dir(testFile), "../fixtures/person-in-field.jpg")
+		bgFixtureFile = path.Join(path.Dir(testFile), "../fixtures/background.jpg")
 		subject = client.Client{
 			HTTPClient: http.Client{},
 		}
@@ -53,6 +55,27 @@ var _ = Describe("Client", func() {
 			BodyString("data")
 
 		_, err := subject.RemoveFromFile(fixtureFile, "api-key", map[string]string{})
+
+		Expect(err).To(Not(HaveOccurred()))
+		Expect(gock.IsDone()).To(BeTrue())
+	})
+
+	It("attaches a background image file if specified", func() {
+		imageMatcher := newMultipartAttachmentMatcher("image_file", "person-in-field.jpg")
+		bgImagematcher := newMultipartAttachmentMatcher("bg_image_file", "background.jpg")
+
+		gock.New("https://api.remove.bg").
+			Post("/v1.0/removebg").
+			SetMatcher(imageMatcher).
+			SetMatcher(bgImagematcher).
+			Reply(200).
+			BodyString("data")
+
+		params := map[string]string{
+			"bg_image_file": bgFixtureFile,
+		}
+
+		_, err := subject.RemoveFromFile(fixtureFile, "api-key", params)
 
 		Expect(err).To(Not(HaveOccurred()))
 		Expect(gock.IsDone()).To(BeTrue())

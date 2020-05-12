@@ -86,11 +86,12 @@ var _ = Describe("Processor", func() {
 		inputPaths := []string{"dir/image1.jpg"}
 
 		testSettings.ImageSettings = processor.ImageSettings{
-			Size:     "size-value",
-			Type:     "type-value",
-			Channels: "channels-value",
-			BgColor:  "bg-color-value",
-			Format:   "format-value",
+			Size:        "size-value",
+			Type:        "type-value",
+			Channels:    "channels-value",
+			BgColor:     "bg-color-value",
+			BgImageFile: "bg-image-file-value",
+			Format:      "format-value",
 		}
 
 		subject.Process(inputPaths, testSettings)
@@ -102,6 +103,7 @@ var _ = Describe("Processor", func() {
 		Expect(params["type"]).To(Equal("type-value"))
 		Expect(params["channels"]).To(Equal("channels-value"))
 		Expect(params["bg_color"]).To(Equal("bg-color-value"))
+		Expect(params["bg_image_file"]).To(Equal("bg-image-file-value"))
 		Expect(params["format"]).To(Equal("format-value"))
 	})
 
