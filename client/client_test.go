@@ -1,6 +1,7 @@
 package client_test
 
 import (
+	"fmt"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 	"github.com/remove-bg/go/client"
@@ -39,6 +40,21 @@ var _ = Describe("Client", func() {
 
 		Expect(err).To(Not(HaveOccurred()))
 		Expect(result).To(Equal([]byte("data")))
+		Expect(gock.IsDone()).To(BeTrue())
+	})
+
+	It("attaches the image file", func() {
+		matcher := newMultipartAttachmentMatcher("image_file", "person-in-field.jpg")
+
+		gock.New("https://api.remove.bg").
+			Post("/v1.0/removebg").
+			SetMatcher(matcher).
+			Reply(200).
+			BodyString("data")
+
+		_, err := subject.RemoveFromFile(fixtureFile, "api-key", map[string]string{})
+
+		Expect(err).To(Not(HaveOccurred()))
 		Expect(gock.IsDone()).To(BeTrue())
 	})
 
@@ -93,3 +109,28 @@ var _ = Describe("Client", func() {
 		})
 	})
 })
+
+func newMultipartAttachmentMatcher(key string, expectedFilename string) *gock.MockMatcher {
+	// Create a new custom matcher with HTTP headers only matchers
+	matcher := gock.NewBasicMatcher()
+
+	// Add a custom match function
+	matcher.Add(func(req *http.Request, ereq *gock.Request) (bool, error) {
+		_, header, err := req.FormFile(key)
+		if err != nil {
+			return false, err
+		}
+
+		if header.Size == 0 {
+			return false, fmt.Errorf("Attachment is empty: %v", header.Size)
+		}
+
+		if header.Filename == expectedFilename {
+			return true, nil
+		} else {
+			return false, fmt.Errorf("Image filename was: %s", header.Filename)
+		}
+	})
+
+	return matcher
+}
