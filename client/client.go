@@ -52,22 +52,10 @@ func (c Client) RemoveFromFile(inputPath string, apiKey string, params map[strin
 }
 
 func buildRequest(uri string, apiKey string, params map[string]string, inputPath string) (*http.Request, error) {
-	file, err := os.Open(inputPath)
-	if err != nil {
-		return nil, errors.New("Unable to read file")
-	}
-
-	defer file.Close()
-
 	body := &bytes.Buffer{}
 	writer := multipart.NewWriter(body)
 
-	part, err := writer.CreateFormFile("image_file", filepath.Base(inputPath))
-	if err != nil {
-		return nil, err
-	}
-
-	_, err = io.Copy(part, file)
+	err := attachFile(writer, "image_file", inputPath)
 	if err != nil {
 		return nil, err
 	}
@@ -90,6 +78,23 @@ func buildRequest(uri string, apiKey string, params map[string]string, inputPath
 	req.Header.Add("X-Api-Key", apiKey)
 	req.Header.Add("User-Agent", userAgent())
 	return req, err
+}
+
+func attachFile(writer *multipart.Writer, paramName string, filePath string) error {
+	file, err := os.Open(filePath)
+	if err != nil {
+		return errors.New("Unable to read file")
+	}
+
+	defer file.Close()
+
+	part, err := writer.CreateFormFile(paramName, filepath.Base(filePath))
+	if err != nil {
+		return err
+	}
+
+	_, err = io.Copy(part, file)
+	return err
 }
 
 func userAgent() string {
