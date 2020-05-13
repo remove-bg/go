@@ -3,18 +3,24 @@ package processor
 import (
 	"fmt"
 	"github.com/remove-bg/go/client"
+	"github.com/remove-bg/go/composite"
 	"github.com/remove-bg/go/storage"
+	"io/ioutil"
 	"log"
 	"net/http"
 	"net/url"
+	"os"
+	"path/filepath"
+	"strings"
 )
 
 type Processor struct {
-	APIKey   string
-	Client   client.ClientInterface
-	Storage  storage.StorageInterface
-	Prompt   PromptInterface
-	Notifier NotifierInterface
+	APIKey     string
+	Client     client.ClientInterface
+	Storage    storage.StorageInterface
+	Prompt     PromptInterface
+	Notifier   NotifierInterface
+	Compositor composite.CompositorInterface
 }
 
 type Settings struct {
@@ -40,9 +46,10 @@ func NewProcessor(apiKey string) Processor {
 		Client: client.Client{
 			HTTPClient: http.Client{},
 		},
-		Storage:  storage.FileStorage{},
-		Prompt:   Prompt{},
-		Notifier: NewNotifier(),
+		Storage:    storage.FileStorage{},
+		Prompt:     Prompt{},
+		Notifier:   NewNotifier(),
+		Compositor: composite.New(),
 	}
 }
 
@@ -80,13 +87,16 @@ func (p Processor) Process(rawInputPaths []string, settings Settings) {
 
 func (p Processor) processFile(inputPath string, outputPath string, imageSettings ImageSettings) error {
 	params := imageSettingsToParams(imageSettings)
-	processedBytes, err := p.Client.RemoveFromFile(inputPath, p.APIKey, params)
-
+	processedBytes, contentType, err := p.Client.RemoveFromFile(inputPath, p.APIKey, params)
 	if err != nil {
 		return err
 	}
 
-	return p.Storage.Write(outputPath, processedBytes)
+	if strings.Contains(contentType, "application/zip") {
+		return p.processCompositeFile(outputPath, processedBytes)
+	} else {
+		return p.Storage.Write(outputPath, processedBytes)
+	}
 }
 
 func imageSettingsToParams(imageSettings ImageSettings) map[string]string {
@@ -141,4 +151,23 @@ func (p Processor) confirmLargeBatch(inputPaths []string, settings Settings) boo
 	}
 
 	return p.Prompt.ConfirmLargeBatch(batchSize)
+}
+
+func (p Processor) processCompositeFile(outputPath string, processedBytes []byte) error {
+	file, err := ioutil.TempFile("", "removebg.*.zip")
+	if err != nil {
+		return err
+	}
+
+	defer os.Remove(file.Name())
+
+	_, err = file.Write(processedBytes)
+	if err != nil {
+		return err
+	}
+
+	// Convert output/foo.zip -> output/foo.png
+	pngOutputPath := strings.TrimSuffix(outputPath, filepath.Ext(outputPath)) + ".png"
+
+	return p.Compositor.Process(file.Name(), pngOutputPath)
 }

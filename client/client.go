@@ -21,35 +21,36 @@ const bgImageFileParam = "bg_image_file"
 
 //go:generate counterfeiter . ClientInterface
 type ClientInterface interface {
-	RemoveFromFile(inputPath string, apiKey string, params map[string]string) ([]byte, error)
+	RemoveFromFile(inputPath string, apiKey string, params map[string]string) ([]byte, string, error)
 }
 
 type Client struct {
 	HTTPClient http.Client
 }
 
-func (c Client) RemoveFromFile(inputPath string, apiKey string, params map[string]string) ([]byte, error) {
+func (c Client) RemoveFromFile(inputPath string, apiKey string, params map[string]string) ([]byte, string, error) {
 	request, err := buildRequest(APIEndpoint, apiKey, params, inputPath)
 	if err != nil {
-		return nil, err
+		return nil, "", err
 	}
 
 	resp, err := c.HTTPClient.Do(request)
 	if err != nil {
-		return nil, err
+		return nil, "", err
 	}
 
 	defer resp.Body.Close()
 
 	statusCode := resp.StatusCode
 	body, err := ioutil.ReadAll(resp.Body)
+	contentType := resp.Header.Get("Content-Type")
 
 	if statusCode == 200 {
-		return body, err
+		return body, contentType, err
 	} else if statusCode >= 400 && statusCode < 500 {
-		return nil, parseJsonErrors(body)
+		return nil, "", parseJsonErrors(body)
 	} else {
-		return nil, fmt.Errorf("Unable to process image http_status=%d", resp.StatusCode)
+		return nil, "", fmt.Errorf("Unable to process image http_status=%d", resp.StatusCode)
 	}
 }
 
