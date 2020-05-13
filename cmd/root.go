@@ -31,11 +31,11 @@ var RootCmd = &cobra.Command{
 	Version: client.Version,
 	RunE: func(cmd *cobra.Command, args []string) error {
 		if len(apiKey) == 0 {
-			return errors.New("Error: API key must be specified")
+			return errors.New("API key must be specified")
 		}
 
 		if len(args) == 0 {
-			return errors.New("Error: API key must be specified")
+			return errors.New("please specify one or more files")
 		}
 
 		p := processor.NewProcessor(apiKey)
