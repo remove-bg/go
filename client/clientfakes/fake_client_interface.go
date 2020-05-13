@@ -8,7 +8,7 @@ import (
 )
 
 type FakeClientInterface struct {
-	RemoveFromFileStub        func(string, string, map[string]string) ([]byte, error)
+	RemoveFromFileStub        func(string, string, map[string]string) ([]byte, string, error)
 	removeFromFileMutex       sync.RWMutex
 	removeFromFileArgsForCall []struct {
 		arg1 string
@@ -17,17 +17,19 @@ type FakeClientInterface struct {
 	}
 	removeFromFileReturns struct {
 		result1 []byte
-		result2 error
+		result2 string
+		result3 error
 	}
 	removeFromFileReturnsOnCall map[int]struct {
 		result1 []byte
-		result2 error
+		result2 string
+		result3 error
 	}
 	invocations      map[string][][]interface{}
 	invocationsMutex sync.RWMutex
 }
 
-func (fake *FakeClientInterface) RemoveFromFile(arg1 string, arg2 string, arg3 map[string]string) ([]byte, error) {
+func (fake *FakeClientInterface) RemoveFromFile(arg1 string, arg2 string, arg3 map[string]string) ([]byte, string, error) {
 	fake.removeFromFileMutex.Lock()
 	ret, specificReturn := fake.removeFromFileReturnsOnCall[len(fake.removeFromFileArgsForCall)]
 	fake.removeFromFileArgsForCall = append(fake.removeFromFileArgsForCall, struct {
@@ -41,10 +43,10 @@ func (fake *FakeClientInterface) RemoveFromFile(arg1 string, arg2 string, arg3 m
 		return fake.RemoveFromFileStub(arg1, arg2, arg3)
 	}
 	if specificReturn {
-		return ret.result1, ret.result2
+		return ret.result1, ret.result2, ret.result3
 	}
 	fakeReturns := fake.removeFromFileReturns
-	return fakeReturns.result1, fakeReturns.result2
+	return fakeReturns.result1, fakeReturns.result2, fakeReturns.result3
 }
 
 func (fake *FakeClientInterface) RemoveFromFileCallCount() int {
@@ -53,7 +55,7 @@ func (fake *FakeClientInterface) RemoveFromFileCallCount() int {
 	return len(fake.removeFromFileArgsForCall)
 }
 
-func (fake *FakeClientInterface) RemoveFromFileCalls(stub func(string, string, map[string]string) ([]byte, error)) {
+func (fake *FakeClientInterface) RemoveFromFileCalls(stub func(string, string, map[string]string) ([]byte, string, error)) {
 	fake.removeFromFileMutex.Lock()
 	defer fake.removeFromFileMutex.Unlock()
 	fake.RemoveFromFileStub = stub
@@ -66,30 +68,33 @@ func (fake *FakeClientInterface) RemoveFromFileArgsForCall(i int) (string, strin
 	return argsForCall.arg1, argsForCall.arg2, argsForCall.arg3
 }
 
-func (fake *FakeClientInterface) RemoveFromFileReturns(result1 []byte, result2 error) {
+func (fake *FakeClientInterface) RemoveFromFileReturns(result1 []byte, result2 string, result3 error) {
 	fake.removeFromFileMutex.Lock()
 	defer fake.removeFromFileMutex.Unlock()
 	fake.RemoveFromFileStub = nil
 	fake.removeFromFileReturns = struct {
 		result1 []byte
-		result2 error
-	}{result1, result2}
+		result2 string
+		result3 error
+	}{result1, result2, result3}
 }
 
-func (fake *FakeClientInterface) RemoveFromFileReturnsOnCall(i int, result1 []byte, result2 error) {
+func (fake *FakeClientInterface) RemoveFromFileReturnsOnCall(i int, result1 []byte, result2 string, result3 error) {
 	fake.removeFromFileMutex.Lock()
 	defer fake.removeFromFileMutex.Unlock()
 	fake.RemoveFromFileStub = nil
 	if fake.removeFromFileReturnsOnCall == nil {
 		fake.removeFromFileReturnsOnCall = make(map[int]struct {
 			result1 []byte
-			result2 error
+			result2 string
+			result3 error
 		})
 	}
 	fake.removeFromFileReturnsOnCall[i] = struct {
 		result1 []byte
-		result2 error
-	}{result1, result2}
+		result2 string
+		result3 error
+	}{result1, result2, result3}
 }
 
 func (fake *FakeClientInterface) Invocations() map[string][][]interface{} {

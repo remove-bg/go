@@ -13,6 +13,11 @@ import (
 	"io"
 )
 
+//go:generate counterfeiter . CompositorInterface
+type CompositorInterface interface {
+	Process(inputZipPath string, outputImagePath string) error
+}
+
 type Compositor struct {
 	Storage storage.StorageInterface
 }

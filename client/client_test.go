@@ -36,12 +36,14 @@ var _ = Describe("Client", func() {
 			Post("/v1.0/removebg").
 			MatchHeader("X-Api-Key", "^api-key$").
 			Reply(200).
+			SetHeader("Content-Type", "image/png").
 			BodyString("data")
 
-		result, err := subject.RemoveFromFile(fixtureFile, "api-key", map[string]string{})
+		result, contentType, err := subject.RemoveFromFile(fixtureFile, "api-key", map[string]string{})
 
 		Expect(err).To(Not(HaveOccurred()))
 		Expect(result).To(Equal([]byte("data")))
+		Expect(contentType).To(Equal("image/png"))
 		Expect(gock.IsDone()).To(BeTrue())
 	})
 
@@ -54,7 +56,7 @@ var _ = Describe("Client", func() {
 			Reply(200).
 			BodyString("data")
 
-		_, err := subject.RemoveFromFile(fixtureFile, "api-key", map[string]string{})
+		_, _, err := subject.RemoveFromFile(fixtureFile, "api-key", map[string]string{})
 
 		Expect(err).To(Not(HaveOccurred()))
 		Expect(gock.IsDone()).To(BeTrue())
@@ -75,7 +77,7 @@ var _ = Describe("Client", func() {
 			"bg_image_file": bgFixtureFile,
 		}
 
-		_, err := subject.RemoveFromFile(fixtureFile, "api-key", params)
+		_, _, err := subject.RemoveFromFile(fixtureFile, "api-key", params)
 
 		Expect(err).To(Not(HaveOccurred()))
 		Expect(gock.IsDone()).To(BeTrue())
@@ -99,7 +101,7 @@ var _ = Describe("Client", func() {
 				Post("/v1.0/removebg").
 				Reply(500)
 
-			result, err := subject.RemoveFromFile(fixtureFile, "api-key", map[string]string{})
+			result, _, err := subject.RemoveFromFile(fixtureFile, "api-key", map[string]string{})
 
 			Expect(result).To(BeNil())
 			Expect(err).To(MatchError("Unable to process image http_status=500"))
@@ -115,7 +117,7 @@ var _ = Describe("Client", func() {
 				Reply(400).
 				BodyString(jsonError)
 
-			result, err := subject.RemoveFromFile(fixtureFile, "api-key", map[string]string{})
+			result, _, err := subject.RemoveFromFile(fixtureFile, "api-key", map[string]string{})
 
 			Expect(result).To(BeNil())
 			Expect(err).To(MatchError("File too large, Second error"))
@@ -125,7 +127,7 @@ var _ = Describe("Client", func() {
 	Context("input file doesn't exist", func() {
 		It("returns a clear error", func() {
 			nonExistentFile := "/tmp/not-a-file"
-			result, err := subject.RemoveFromFile(nonExistentFile, "api-key", map[string]string{})
+			result, _, err := subject.RemoveFromFile(nonExistentFile, "api-key", map[string]string{})
 
 			Expect(result).To(BeNil())
 			Expect(err).To(MatchError("Unable to read file"))

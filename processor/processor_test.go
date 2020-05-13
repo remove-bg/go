@@ -5,19 +5,24 @@ import (
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 	"github.com/remove-bg/go/client/clientfakes"
+	"github.com/remove-bg/go/composite/compositefakes"
 	"github.com/remove-bg/go/processor"
 	"github.com/remove-bg/go/processor/processorfakes"
 	"github.com/remove-bg/go/storage/storagefakes"
 )
 
+const zipMime = "application/zip"
+const pngMime = "image/png"
+
 var _ = Describe("Processor", func() {
 	var (
-		fakeClient   *clientfakes.FakeClientInterface
-		fakeStorage  *storagefakes.FakeStorageInterface
-		fakePrompt   *processorfakes.FakePromptInterface
-		fakeNotifier *processorfakes.FakeNotifierInterface
-		subject      processor.Processor
-		testSettings processor.Settings
+		fakeClient     *clientfakes.FakeClientInterface
+		fakeStorage    *storagefakes.FakeStorageInterface
+		fakePrompt     *processorfakes.FakePromptInterface
+		fakeNotifier   *processorfakes.FakeNotifierInterface
+		fakeCompositor *compositefakes.FakeCompositorInterface
+		subject        processor.Processor
+		testSettings   processor.Settings
 	)
 
 	BeforeEach(func() {
@@ -25,17 +30,19 @@ var _ = Describe("Processor", func() {
 		fakeStorage = &storagefakes.FakeStorageInterface{}
 		fakePrompt = &processorfakes.FakePromptInterface{}
 		fakeNotifier = &processorfakes.FakeNotifierInterface{}
+		fakeCompositor = &compositefakes.FakeCompositorInterface{}
 		fakePrompt.ConfirmLargeBatchReturns(true)
 		fakeStorage.ExpandPathsStub = func(input []string) ([]string, error) {
 			return input, nil
 		}
 
 		subject = processor.Processor{
-			APIKey:   "api-key",
-			Client:   fakeClient,
-			Storage:  fakeStorage,
-			Prompt:   fakePrompt,
-			Notifier: fakeNotifier,
+			APIKey:     "api-key",
+			Client:     fakeClient,
+			Storage:    fakeStorage,
+			Prompt:     fakePrompt,
+			Notifier:   fakeNotifier,
+			Compositor: fakeCompositor,
 		}
 
 		testSettings = processor.Settings{
@@ -60,8 +67,8 @@ var _ = Describe("Processor", func() {
 	})
 
 	It("coordinates the HTTP request and writing the result", func() {
-		fakeClient.RemoveFromFileReturnsOnCall(0, []byte("Processed1"), nil)
-		fakeClient.RemoveFromFileReturnsOnCall(1, []byte("Processed2"), nil)
+		fakeClient.RemoveFromFileReturnsOnCall(0, []byte("Processed1"), pngMime, nil)
+		fakeClient.RemoveFromFileReturnsOnCall(1, []byte("Processed2"), pngMime, nil)
 
 		inputPaths := []string{"dir/image1.jpg", "dir/image2.jpg"}
 
@@ -81,10 +88,39 @@ var _ = Describe("Processor", func() {
 		Expect(writerArg2).To(Equal([]byte("Processed1")))
 	})
 
+	Context("zip format result", func() {
+		It("delegates to the compositor", func() {
+			fakeCompositor.ProcessReturns(nil)
+			fakeClient.RemoveFromFileReturnsOnCall(0, []byte("Zip1"), zipMime, nil)
+			fakeClient.RemoveFromFileReturnsOnCall(1, []byte("Zip2"), zipMime, nil)
+
+			inputPaths := []string{"dir/image1.jpg", "dir/image2.jpg"}
+			testSettings.OutputDirectory = "out-dir"
+			testSettings.ImageSettings.Format = "zip"
+
+			subject.Process(inputPaths, testSettings)
+
+			Expect(fakeCompositor.ProcessCallCount()).To(Equal(2))
+
+			zipFileName, outputPath := fakeCompositor.ProcessArgsForCall(0)
+			Expect(zipFileName).To(ContainSubstring(".zip"))
+			Expect(outputPath).To(Equal("out-dir/image1.png"))
+		})
+	})
+
 	Describe("image options", func() {
 		It("passes non-empty image options to the client", func() {
-			fakeClient.RemoveFromFileReturnsOnCall(0, []byte("Processed1"), nil)
+			fakeClient.RemoveFromFileReturnsOnCall(0, []byte("Processed1"), pngMime, nil)
 			inputPaths := []string{"dir/image1.jpg"}
+
+			testSettings.ImageSettings = processor.ImageSettings{
+				Size:        "size-value",
+				Type:        "type-value",
+				Channels:    "channels-value",
+				BgColor:     "bg-color-value",
+				BgImageFile: "bg-image-file-value",
+				Format:      "format-value",
+			}
 
 			testSettings.ImageSettings = processor.ImageSettings{
 				Size:        "size-value",
@@ -109,7 +145,7 @@ var _ = Describe("Processor", func() {
 		})
 
 		It("parses any extra API options into params", func() {
-			fakeClient.RemoveFromFileReturnsOnCall(0, []byte("Processed1"), nil)
+			fakeClient.RemoveFromFileReturnsOnCall(0, []byte("Processed1"), pngMime, nil)
 			inputPaths := []string{"dir/image1.jpg"}
 
 			testSettings.ImageSettings = processor.ImageSettings{
@@ -130,8 +166,8 @@ var _ = Describe("Processor", func() {
 
 	Context("client error", func() {
 		It("keeps processing images", func() {
-			fakeClient.RemoveFromFileReturnsOnCall(0, nil, errors.New("boom"))
-			fakeClient.RemoveFromFileReturnsOnCall(1, []byte("Processed2"), nil)
+			fakeClient.RemoveFromFileReturnsOnCall(0, nil, "", errors.New("boom"))
+			fakeClient.RemoveFromFileReturnsOnCall(1, []byte("Processed2"), pngMime, nil)
 			inputPaths := []string{"dir/image1.jpg", "dir/image2.jpg"}
 
 			subject.Process(inputPaths, testSettings)
@@ -147,8 +183,8 @@ var _ = Describe("Processor", func() {
 
 		It("passes the error details to the notifier", func() {
 			err := errors.New("boom")
-			fakeClient.RemoveFromFileReturnsOnCall(0, nil, err)
-			fakeClient.RemoveFromFileReturnsOnCall(1, []byte("Processed2"), nil)
+			fakeClient.RemoveFromFileReturnsOnCall(0, nil, "", err)
+			fakeClient.RemoveFromFileReturnsOnCall(1, []byte("Processed2"), pngMime, nil)
 			inputPaths := []string{"dir/image1.jpg", "dir/image2.jpg"}
 
 			subject.Process(inputPaths, testSettings)
@@ -166,8 +202,8 @@ var _ = Describe("Processor", func() {
 
 	Context("writer error", func() {
 		It("keeps processing images", func() {
-			fakeClient.RemoveFromFileReturnsOnCall(0, []byte("Processed1"), nil)
-			fakeClient.RemoveFromFileReturnsOnCall(1, []byte("Processed2"), nil)
+			fakeClient.RemoveFromFileReturnsOnCall(0, []byte("Processed1"), pngMime, nil)
+			fakeClient.RemoveFromFileReturnsOnCall(1, []byte("Processed2"), pngMime, nil)
 			fakeStorage.WriteReturnsOnCall(0, errors.New("boom"))
 			inputPaths := []string{"dir/image1.jpg", "dir/image2.jpg"}
 
@@ -180,8 +216,8 @@ var _ = Describe("Processor", func() {
 
 		It("passes the error details to the notifier", func() {
 			err := errors.New("boom")
-			fakeClient.RemoveFromFileReturnsOnCall(0, []byte("Processed1"), nil)
-			fakeClient.RemoveFromFileReturnsOnCall(1, []byte("Processed2"), nil)
+			fakeClient.RemoveFromFileReturnsOnCall(0, []byte("Processed1"), pngMime, nil)
+			fakeClient.RemoveFromFileReturnsOnCall(1, []byte("Processed2"), pngMime, nil)
 			fakeStorage.WriteReturnsOnCall(0, err)
 			inputPaths := []string{"dir/image1.jpg", "dir/image2.jpg"}
 
@@ -295,6 +331,7 @@ var _ = Describe("Processor", func() {
 			Expect(p.Storage).ToNot(BeNil())
 			Expect(p.Prompt).ToNot(BeNil())
 			Expect(p.Notifier).ToNot(BeNil())
+			Expect(p.Compositor).ToNot(BeNil())
 		})
 	})
 })
