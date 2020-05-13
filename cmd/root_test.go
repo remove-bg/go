@@ -1,15 +1,13 @@
-package cli_test
+package cmd_test
 
 import (
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
-
-	. "github.com/remove-bg/go/cli"
+	. "github.com/remove-bg/go/cmd"
 )
 
 var _ = Describe("CLI", func() {
 	It("has a version", func() {
-		app := Bootstrap()
-		Expect(app.Version).To(MatchRegexp(`\d+\.\d+\.\d+`))
+		Expect(RootCmd.Version).To(MatchRegexp(`\d+\.\d+\.\d+`))
 	})
 })
