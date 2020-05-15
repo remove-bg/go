@@ -15,7 +15,6 @@ import (
 )
 
 const APIEndpoint = "https://api.remove.bg/v1.0/removebg"
-const Version = "1.1.0"
 const imageFileParam = "image_file"
 const bgImageFileParam = "bg_image_file"
 
@@ -25,11 +24,12 @@ type ClientInterface interface {
 }
 
 type Client struct {
+	Version    string
 	HTTPClient http.Client
 }
 
 func (c Client) RemoveFromFile(inputPath string, apiKey string, params map[string]string) ([]byte, string, error) {
-	request, err := buildRequest(APIEndpoint, apiKey, params, inputPath)
+	request, err := c.buildRequest(APIEndpoint, apiKey, params, inputPath)
 	if err != nil {
 		return nil, "", err
 	}
@@ -54,7 +54,7 @@ func (c Client) RemoveFromFile(inputPath string, apiKey string, params map[strin
 	}
 }
 
-func buildRequest(uri string, apiKey string, params map[string]string, inputPath string) (*http.Request, error) {
+func (c Client) buildRequest(uri string, apiKey string, params map[string]string, inputPath string) (*http.Request, error) {
 	body := &bytes.Buffer{}
 	writer := multipart.NewWriter(body)
 
@@ -87,7 +87,7 @@ func buildRequest(uri string, apiKey string, params map[string]string, inputPath
 
 	req.Header.Set("Content-Type", writer.FormDataContentType())
 	req.Header.Add("X-Api-Key", apiKey)
-	req.Header.Add("User-Agent", userAgent())
+	req.Header.Add("User-Agent", c.userAgent())
 	return req, err
 }
 
@@ -108,8 +108,8 @@ func attachFile(writer *multipart.Writer, paramName string, filePath string) err
 	return err
 }
 
-func userAgent() string {
-	return fmt.Sprintf("remove-bg-go-%s", Version)
+func (c Client) userAgent() string {
+	return fmt.Sprintf("remove-bg-go-%s", c.Version)
 }
 
 func parseJsonErrors(body []byte) error {

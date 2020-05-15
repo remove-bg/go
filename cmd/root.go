@@ -2,7 +2,7 @@ package cmd
 
 import (
 	"errors"
-	"github.com/remove-bg/go/client"
+	"fmt"
 	"github.com/remove-bg/go/processor"
 	"github.com/spf13/cobra"
 	"os"
@@ -28,10 +28,9 @@ var (
 
 // RootCmd is the entry point of command-line execution
 var RootCmd = &cobra.Command{
-	Short:   "Remove image background - 100% automatically",
-	Use:     "removebg <file>...",
-	Args:    cobra.MinimumNArgs(1),
-	Version: client.Version,
+	Short: "Remove image background - 100% automatically",
+	Use:   "removebg <file>...",
+	Args:  cobra.MinimumNArgs(1),
 	RunE: func(cmd *cobra.Command, args []string) error {
 		if len(apiKey) == 0 {
 			return errors.New("API key must be specified")
@@ -41,7 +40,7 @@ var RootCmd = &cobra.Command{
 			return errors.New("please specify one or more files")
 		}
 
-		p := processor.NewProcessor(apiKey)
+		p := processor.NewProcessor(apiKey, cmd.Version)
 		s := processor.Settings{
 			OutputDirectory:            outputDirectory,
 			ReprocessExisting:          reprocessExisting,
@@ -62,6 +61,11 @@ var RootCmd = &cobra.Command{
 
 		return nil
 	},
+}
+
+func ConfigureVersion(version string, commit string) {
+	RootCmd.Version = version
+	RootCmd.SetVersionTemplate(fmt.Sprintf("%s\n%s\n", version, commit))
 }
 
 func init() {

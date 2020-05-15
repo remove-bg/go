@@ -362,7 +362,7 @@ var _ = Describe("Processor", func() {
 
 	Describe("NewProcessor", func() {
 		It("builds a processor", func() {
-			p := processor.NewProcessor("api-key")
+			p := processor.NewProcessor("api-key", "1.0.0")
 
 			Expect(p.APIKey).To(Equal("api-key"))
 			Expect(p.Client).ToNot(BeNil())

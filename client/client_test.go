@@ -23,6 +23,7 @@ var _ = Describe("Client", func() {
 		fixtureFile = path.Join(path.Dir(testFile), "../fixtures/person-in-field.jpg")
 		bgFixtureFile = path.Join(path.Dir(testFile), "../fixtures/background.jpg")
 		subject = client.Client{
+			Version:    "x.y.z",
 			HTTPClient: http.Client{},
 		}
 	})
@@ -86,7 +87,7 @@ var _ = Describe("Client", func() {
 	It("includes the client version", func() {
 		gock.New("https://api.remove.bg").
 			Post("/v1.0/removebg").
-			MatchHeader("User-Agent", `^remove-bg-go-\d+\.\d+\.\d+$`).
+			MatchHeader("User-Agent", "remove-bg-go-x.y.z").
 			Reply(200).
 			BodyString("data")
 

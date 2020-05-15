@@ -41,10 +41,11 @@ type ImageSettings struct {
 	ExtraApiOptions string
 }
 
-func NewProcessor(apiKey string) Processor {
+func NewProcessor(apiKey string, version string) Processor {
 	return Processor{
 		APIKey: apiKey,
 		Client: client.Client{
+			Version:    version,
 			HTTPClient: http.Client{},
 		},
 		Storage:    storage.FileStorage{},

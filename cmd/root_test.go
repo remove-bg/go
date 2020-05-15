@@ -6,8 +6,10 @@ import (
 	. "github.com/remove-bg/go/cmd"
 )
 
-var _ = Describe("CLI", func() {
-	It("has a version", func() {
-		Expect(RootCmd.Version).To(MatchRegexp(`\d+\.\d+\.\d+`))
+var _ = Describe("ConfigureVersion", func() {
+	It("sets the version", func() {
+		ConfigureVersion("x.y.z", "sha")
+
+		Expect(RootCmd.Version).To(Equal("x.y.z"))
 	})
 })
