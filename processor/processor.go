@@ -64,6 +64,8 @@ func (p Processor) Process(rawInputPaths []string, settings Settings) {
 		return
 	}
 
+	settings.ImageSettings.upgradePngToZipFormat()
+
 	totalImages := len(inputPaths)
 
 	for index, inputPath := range inputPaths {
@@ -85,6 +87,17 @@ func (p Processor) Process(rawInputPaths []string, settings Settings) {
 	}
 }
 
+const FormatPng = "png"
+const FormatZip = "zip"
+const MimeZip = "application/zip"
+
+func (is *ImageSettings) upgradePngToZipFormat() {
+	// Save network bandwidth by requesting ZIP format (output will still be a PNG)
+	if is.Format == FormatPng {
+		is.Format = FormatZip
+	}
+}
+
 func (p Processor) processFile(inputPath string, outputPath string, imageSettings ImageSettings) error {
 	params := imageSettingsToParams(imageSettings)
 	processedBytes, contentType, err := p.Client.RemoveFromFile(inputPath, p.APIKey, params)
@@ -92,7 +105,7 @@ func (p Processor) processFile(inputPath string, outputPath string, imageSetting
 		return err
 	}
 
-	if strings.Contains(contentType, "application/zip") {
+	if strings.Contains(contentType, MimeZip) {
 		return p.processCompositeFile(outputPath, processedBytes)
 	} else {
 		return p.Storage.Write(outputPath, processedBytes)

@@ -6,6 +6,7 @@ import (
 	"github.com/remove-bg/go/processor"
 	"github.com/spf13/cobra"
 	"os"
+	"strings"
 )
 
 const defaultLargeBatchSize = 50
@@ -50,7 +51,7 @@ var RootCmd = &cobra.Command{
 				Channels:        imageChannels,
 				BgColor:         bgColor,
 				BgImageFile:     bgImageFile,
-				Format:          imageFormat,
+				Format:          strings.ToLower(imageFormat),
 				ExtraApiOptions: extraApiOptions,
 			},
 		}

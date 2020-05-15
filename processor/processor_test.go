@@ -11,8 +11,7 @@ import (
 	"github.com/remove-bg/go/storage/storagefakes"
 )
 
-const zipMime = "application/zip"
-const pngMime = "image/png"
+const mimePng = "image/png"
 
 var _ = Describe("Processor", func() {
 	var (
@@ -67,8 +66,8 @@ var _ = Describe("Processor", func() {
 	})
 
 	It("coordinates the HTTP request and writing the result", func() {
-		fakeClient.RemoveFromFileReturnsOnCall(0, []byte("Processed1"), pngMime, nil)
-		fakeClient.RemoveFromFileReturnsOnCall(1, []byte("Processed2"), pngMime, nil)
+		fakeClient.RemoveFromFileReturnsOnCall(0, []byte("Processed1"), mimePng, nil)
+		fakeClient.RemoveFromFileReturnsOnCall(1, []byte("Processed2"), mimePng, nil)
 
 		inputPaths := []string{"dir/image1.jpg", "dir/image2.jpg"}
 
@@ -88,15 +87,49 @@ var _ = Describe("Processor", func() {
 		Expect(writerArg2).To(Equal([]byte("Processed1")))
 	})
 
-	Context("zip format result", func() {
+	Context("zip format requested", func() {
 		It("delegates to the compositor", func() {
 			fakeCompositor.ProcessReturns(nil)
-			fakeClient.RemoveFromFileReturnsOnCall(0, []byte("Zip1"), zipMime, nil)
-			fakeClient.RemoveFromFileReturnsOnCall(1, []byte("Zip2"), zipMime, nil)
+			fakeClient.RemoveFromFileReturnsOnCall(0, []byte("Zip1"), processor.MimeZip, nil)
+			fakeClient.RemoveFromFileReturnsOnCall(1, []byte("Zip2"), processor.MimeZip, nil)
 
 			inputPaths := []string{"dir/image1.jpg", "dir/image2.jpg"}
 			testSettings.OutputDirectory = "out-dir"
-			testSettings.ImageSettings.Format = "zip"
+			testSettings.ImageSettings.Format = processor.FormatZip
+
+			subject.Process(inputPaths, testSettings)
+
+			Expect(fakeCompositor.ProcessCallCount()).To(Equal(2))
+
+			zipFileName, outputPath := fakeCompositor.ProcessArgsForCall(0)
+			Expect(zipFileName).To(ContainSubstring(".zip"))
+			Expect(outputPath).To(Equal("out-dir/image1.png"))
+		})
+	})
+
+	Context("png format requested", func() {
+		BeforeEach(func() {
+			fakeCompositor.ProcessReturns(nil)
+			fakeClient.RemoveFromFileReturnsOnCall(0, []byte("Zip1"), processor.MimeZip, nil)
+			fakeClient.RemoveFromFileReturnsOnCall(1, []byte("Zip2"), processor.MimeZip, nil)
+		})
+
+		It("upgrades the format to zip behind the scenes", func() {
+			inputPaths := []string{"dir/image1.jpg", "dir/image2.jpg"}
+			testSettings.OutputDirectory = "out-dir"
+			testSettings.ImageSettings.Format = processor.FormatPng
+
+			subject.Process(inputPaths, testSettings)
+
+			Expect(fakeClient.RemoveFromFileCallCount()).To(Equal(2))
+			_, _, params := fakeClient.RemoveFromFileArgsForCall(0)
+			Expect(params["format"]).To(Equal(processor.FormatZip))
+		})
+
+		It("delegates to the compositor", func() {
+			inputPaths := []string{"dir/image1.jpg", "dir/image2.jpg"}
+			testSettings.OutputDirectory = "out-dir"
+			testSettings.ImageSettings.Format = processor.FormatPng
 
 			subject.Process(inputPaths, testSettings)
 
@@ -110,17 +143,8 @@ var _ = Describe("Processor", func() {
 
 	Describe("image options", func() {
 		It("passes non-empty image options to the client", func() {
-			fakeClient.RemoveFromFileReturnsOnCall(0, []byte("Processed1"), pngMime, nil)
+			fakeClient.RemoveFromFileReturnsOnCall(0, []byte("Processed1"), mimePng, nil)
 			inputPaths := []string{"dir/image1.jpg"}
-
-			testSettings.ImageSettings = processor.ImageSettings{
-				Size:        "size-value",
-				Type:        "type-value",
-				Channels:    "channels-value",
-				BgColor:     "bg-color-value",
-				BgImageFile: "bg-image-file-value",
-				Format:      "format-value",
-			}
 
 			testSettings.ImageSettings = processor.ImageSettings{
 				Size:        "size-value",
@@ -145,7 +169,7 @@ var _ = Describe("Processor", func() {
 		})
 
 		It("parses any extra API options into params", func() {
-			fakeClient.RemoveFromFileReturnsOnCall(0, []byte("Processed1"), pngMime, nil)
+			fakeClient.RemoveFromFileReturnsOnCall(0, []byte("Processed1"), mimePng, nil)
 			inputPaths := []string{"dir/image1.jpg"}
 
 			testSettings.ImageSettings = processor.ImageSettings{
@@ -167,7 +191,7 @@ var _ = Describe("Processor", func() {
 	Context("client error", func() {
 		It("keeps processing images", func() {
 			fakeClient.RemoveFromFileReturnsOnCall(0, nil, "", errors.New("boom"))
-			fakeClient.RemoveFromFileReturnsOnCall(1, []byte("Processed2"), pngMime, nil)
+			fakeClient.RemoveFromFileReturnsOnCall(1, []byte("Processed2"), mimePng, nil)
 			inputPaths := []string{"dir/image1.jpg", "dir/image2.jpg"}
 
 			subject.Process(inputPaths, testSettings)
@@ -184,7 +208,7 @@ var _ = Describe("Processor", func() {
 		It("passes the error details to the notifier", func() {
 			err := errors.New("boom")
 			fakeClient.RemoveFromFileReturnsOnCall(0, nil, "", err)
-			fakeClient.RemoveFromFileReturnsOnCall(1, []byte("Processed2"), pngMime, nil)
+			fakeClient.RemoveFromFileReturnsOnCall(1, []byte("Processed2"), mimePng, nil)
 			inputPaths := []string{"dir/image1.jpg", "dir/image2.jpg"}
 
 			subject.Process(inputPaths, testSettings)
@@ -202,8 +226,8 @@ var _ = Describe("Processor", func() {
 
 	Context("writer error", func() {
 		It("keeps processing images", func() {
-			fakeClient.RemoveFromFileReturnsOnCall(0, []byte("Processed1"), pngMime, nil)
-			fakeClient.RemoveFromFileReturnsOnCall(1, []byte("Processed2"), pngMime, nil)
+			fakeClient.RemoveFromFileReturnsOnCall(0, []byte("Processed1"), mimePng, nil)
+			fakeClient.RemoveFromFileReturnsOnCall(1, []byte("Processed2"), mimePng, nil)
 			fakeStorage.WriteReturnsOnCall(0, errors.New("boom"))
 			inputPaths := []string{"dir/image1.jpg", "dir/image2.jpg"}
 
@@ -216,8 +240,8 @@ var _ = Describe("Processor", func() {
 
 		It("passes the error details to the notifier", func() {
 			err := errors.New("boom")
-			fakeClient.RemoveFromFileReturnsOnCall(0, []byte("Processed1"), pngMime, nil)
-			fakeClient.RemoveFromFileReturnsOnCall(1, []byte("Processed2"), pngMime, nil)
+			fakeClient.RemoveFromFileReturnsOnCall(0, []byte("Processed1"), mimePng, nil)
+			fakeClient.RemoveFromFileReturnsOnCall(1, []byte("Processed2"), mimePng, nil)
 			fakeStorage.WriteReturnsOnCall(0, err)
 			inputPaths := []string{"dir/image1.jpg", "dir/image2.jpg"}
 
