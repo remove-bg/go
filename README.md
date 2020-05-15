@@ -138,3 +138,18 @@ To build & try out locally:
 go build -o removebg main.go
 ./removebg --help
 ```
+
+### Releasing a new version
+
+- Install [goreleaser](https://goreleaser.com/install/)
+- [Create a Github token](https://github.com/settings/tokens/new) with repo access
+- Export the token: `GITHUB_TOKEN=xyz`
+- Tag a commit:
+
+```
+git tag -a v1.0.0 -m "Name"
+git push origin v0.1.0
+```
+
+- (Optional) dry run: `goreleaser --skip-publish --rm-dist`
+- To build the release: `goreleaser --rm-dist`
