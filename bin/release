@@ -1,0 +1,33 @@
+#!/usr/bin/env ruby
+
+version = ARGV.first
+
+unless version
+  warn "Usage: bin/release <version>\nE.g. bin/release v1.2.3"
+  exit 1
+end
+
+unless ENV.key?("GITHUB_TOKEN")
+  warn "Please set GITHUB_TOKEN environment variable"
+  exit 1
+end
+
+unless system("which goreleaser > /dev/null")
+  warn "Please install goreleaser:\nhttps://goreleaser.com/install/"
+  exit 1
+end
+
+puts "Creating tag..."
+unless system("git tag -a #{version} -m '#{version}'")
+  warn "Unable to create tag"
+  exit 1
+end
+
+puts "Pushing tag..."
+unless system("git push origin #{version}")
+  warn "Unable to push tag"
+  exit 1
+end
+
+puts "Builing release..."
+exec("goreleaser --rm-dist")
