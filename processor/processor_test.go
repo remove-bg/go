@@ -81,30 +81,51 @@ var _ = Describe("Processor", func() {
 		Expect(writerArg2).To(Equal([]byte("Processed1")))
 	})
 
-	It("passes non-empty image options to the client", func() {
-		fakeClient.RemoveFromFileReturnsOnCall(0, []byte("Processed1"), nil)
-		inputPaths := []string{"dir/image1.jpg"}
+	Describe("image options", func() {
+		It("passes non-empty image options to the client", func() {
+			fakeClient.RemoveFromFileReturnsOnCall(0, []byte("Processed1"), nil)
+			inputPaths := []string{"dir/image1.jpg"}
 
-		testSettings.ImageSettings = processor.ImageSettings{
-			Size:        "size-value",
-			Type:        "type-value",
-			Channels:    "channels-value",
-			BgColor:     "bg-color-value",
-			BgImageFile: "bg-image-file-value",
-			Format:      "format-value",
-		}
+			testSettings.ImageSettings = processor.ImageSettings{
+				Size:        "size-value",
+				Type:        "type-value",
+				Channels:    "channels-value",
+				BgColor:     "bg-color-value",
+				BgImageFile: "bg-image-file-value",
+				Format:      "format-value",
+			}
 
-		subject.Process(inputPaths, testSettings)
+			subject.Process(inputPaths, testSettings)
 
-		Expect(fakeClient.RemoveFromFileCallCount()).To(Equal(1))
-		_, _, params := fakeClient.RemoveFromFileArgsForCall(0)
+			Expect(fakeClient.RemoveFromFileCallCount()).To(Equal(1))
+			_, _, params := fakeClient.RemoveFromFileArgsForCall(0)
 
-		Expect(params["size"]).To(Equal("size-value"))
-		Expect(params["type"]).To(Equal("type-value"))
-		Expect(params["channels"]).To(Equal("channels-value"))
-		Expect(params["bg_color"]).To(Equal("bg-color-value"))
-		Expect(params["bg_image_file"]).To(Equal("bg-image-file-value"))
-		Expect(params["format"]).To(Equal("format-value"))
+			Expect(params["size"]).To(Equal("size-value"))
+			Expect(params["type"]).To(Equal("type-value"))
+			Expect(params["channels"]).To(Equal("channels-value"))
+			Expect(params["bg_color"]).To(Equal("bg-color-value"))
+			Expect(params["bg_image_file"]).To(Equal("bg-image-file-value"))
+			Expect(params["format"]).To(Equal("format-value"))
+		})
+
+		It("parses any extra API options into params", func() {
+			fakeClient.RemoveFromFileReturnsOnCall(0, []byte("Processed1"), nil)
+			inputPaths := []string{"dir/image1.jpg"}
+
+			testSettings.ImageSettings = processor.ImageSettings{
+				Size:            "size-value",
+				ExtraApiOptions: "option1=val1&option2=val2",
+			}
+
+			subject.Process(inputPaths, testSettings)
+
+			Expect(fakeClient.RemoveFromFileCallCount()).To(Equal(1))
+			_, _, params := fakeClient.RemoveFromFileArgsForCall(0)
+
+			Expect(params["size"]).To(Equal("size-value"))
+			Expect(params["option1"]).To(Equal("val1"))
+			Expect(params["option2"]).To(Equal("val2"))
+		})
 	})
 
 	Context("client error", func() {

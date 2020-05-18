@@ -21,6 +21,7 @@ var (
 	imageChannels     string
 	bgColor           string
 	bgImageFile       string
+	extraApiOptions   string
 )
 
 // RootCmd is the entry point of command-line execution
@@ -44,12 +45,13 @@ var RootCmd = &cobra.Command{
 			ReprocessExisting:          reprocessExisting,
 			LargeBatchConfirmThreshold: confirmBatchOver,
 			ImageSettings: processor.ImageSettings{
-				Size:        imageSize,
-				Type:        imageType,
-				Channels:    imageChannels,
-				BgColor:     bgColor,
-				BgImageFile: bgImageFile,
-				Format:      imageFormat,
+				Size:            imageSize,
+				Type:            imageType,
+				Channels:        imageChannels,
+				BgColor:         bgColor,
+				BgImageFile:     bgImageFile,
+				Format:          imageFormat,
+				ExtraApiOptions: extraApiOptions,
 			},
 		}
 
@@ -70,6 +72,7 @@ func init() {
 	RootCmd.Flags().StringVar(&imageChannels, "channels", "", "Image channels")
 	RootCmd.Flags().StringVar(&bgColor, "bg-color", "", "Image background color")
 	RootCmd.Flags().StringVar(&bgImageFile, "bg-image-file", "", "Adds a background image from a file")
+	RootCmd.Flags().StringVar(&extraApiOptions, "extra-api-options", "", "Extra options to forward to the API (format: 'option1=val1&option2=val2')")
 
 	if len(apiKey) == 0 {
 		apiKey = os.Getenv("REMOVE_BG_API_KEY")

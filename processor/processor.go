@@ -1,10 +1,12 @@
 package processor
 
 import (
+	"fmt"
 	"github.com/remove-bg/go/client"
 	"github.com/remove-bg/go/storage"
 	"log"
 	"net/http"
+	"net/url"
 )
 
 type Processor struct {
@@ -23,12 +25,13 @@ type Settings struct {
 }
 
 type ImageSettings struct {
-	Size        string
-	Type        string
-	Channels    string
-	BgColor     string
-	BgImageFile string
-	Format      string
+	Size            string
+	Type            string
+	Channels        string
+	BgColor         string
+	BgImageFile     string
+	Format          string
+	ExtraApiOptions string
 }
 
 func NewProcessor(apiKey string) Processor {
@@ -112,6 +115,18 @@ func imageSettingsToParams(imageSettings ImageSettings) map[string]string {
 
 	if len(imageSettings.Format) > 0 {
 		params["format"] = imageSettings.Format
+	}
+
+	if len(imageSettings.ExtraApiOptions) > 0 {
+		values, err := url.ParseQuery(imageSettings.ExtraApiOptions)
+
+		if err == nil {
+			for key, _ := range values {
+				params[key] = values.Get(key)
+			}
+		} else {
+			fmt.Printf("Unable to parse extra api options: %s\n", err)
+		}
 	}
 
 	return params
