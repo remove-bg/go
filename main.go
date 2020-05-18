@@ -1,16 +1,16 @@
 package main
 
 import (
-	"log"
+	"fmt"
 	"os"
 
-	"github.com/remove-bg/go/cli"
+	"github.com/remove-bg/go/cmd"
 )
 
 func main() {
-	app := cli.Bootstrap()
-	err := app.Run(os.Args)
+	err := cmd.RootCmd.Execute()
 	if err != nil {
-		log.Fatal(err)
+		fmt.Printf("Error: %s\n", err)
+		os.Exit(1)
 	}
 }

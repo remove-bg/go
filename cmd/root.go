@@ -1,0 +1,77 @@
+package cmd
+
+import (
+	"errors"
+	"github.com/remove-bg/go/client"
+	"github.com/remove-bg/go/processor"
+	"github.com/spf13/cobra"
+	"os"
+)
+
+const defaultLargeBatchSize = 50
+
+var (
+	apiKey            string
+	confirmBatchOver  int
+	outputDirectory   string
+	reprocessExisting bool
+	imageSize         string
+	imageType         string
+	imageFormat       string
+	imageChannels     string
+	bgColor           string
+	bgImageFile       string
+)
+
+// RootCmd is the entry point of command-line execution
+var RootCmd = &cobra.Command{
+	Short:   "Remove image background - 100% automatically",
+	Use:     "removebg <file>...",
+	Args:    cobra.MinimumNArgs(1),
+	Version: client.Version,
+	RunE: func(cmd *cobra.Command, args []string) error {
+		if len(apiKey) == 0 {
+			return errors.New("API key must be specified")
+		}
+
+		if len(args) == 0 {
+			return errors.New("please specify one or more files")
+		}
+
+		p := processor.NewProcessor(apiKey)
+		s := processor.Settings{
+			OutputDirectory:            outputDirectory,
+			ReprocessExisting:          reprocessExisting,
+			LargeBatchConfirmThreshold: confirmBatchOver,
+			ImageSettings: processor.ImageSettings{
+				Size:        imageSize,
+				Type:        imageType,
+				Channels:    imageChannels,
+				BgColor:     bgColor,
+				BgImageFile: bgImageFile,
+				Format:      imageFormat,
+			},
+		}
+
+		p.Process(args, s)
+
+		return nil
+	},
+}
+
+func init() {
+	RootCmd.Flags().StringVar(&apiKey, "api-key", "", "API key (required) or set REMOVE_BG_API_KEY environment variable")
+	RootCmd.Flags().StringVar(&outputDirectory, "output-directory", "", "Output directory")
+	RootCmd.Flags().BoolVar(&reprocessExisting, "reprocess-existing", false, "Reprocess and overwrite any already processed images")
+	RootCmd.Flags().IntVar(&confirmBatchOver, "confirm-batch-over", defaultLargeBatchSize, "Confirm any batches over this size (-1 to disable)")
+	RootCmd.Flags().StringVar(&imageSize, "size", "auto", "Image size")
+	RootCmd.Flags().StringVar(&imageType, "type", "", "Image type")
+	RootCmd.Flags().StringVar(&imageFormat, "format", "png", "Image format")
+	RootCmd.Flags().StringVar(&imageChannels, "channels", "", "Image channels")
+	RootCmd.Flags().StringVar(&bgColor, "bg-color", "", "Image background color")
+	RootCmd.Flags().StringVar(&bgImageFile, "bg-image-file", "", "Adds a background image from a file")
+
+	if len(apiKey) == 0 {
+		apiKey = os.Getenv("REMOVE_BG_API_KEY")
+	}
+}

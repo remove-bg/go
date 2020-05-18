@@ -1,4 +1,4 @@
-package cli_test
+package cmd_test
 
 import (
 	"testing"
@@ -9,5 +9,5 @@ import (
 
 func TestCli(t *testing.T) {
 	RegisterFailHandler(Fail)
-	RunSpecs(t, "CLI Suite")
+	RunSpecs(t, "Cmd Suite")
 }

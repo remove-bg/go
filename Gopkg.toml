@@ -25,10 +25,6 @@
 #   unused-packages = true
 
 
-[[constraint]]
-  name = "github.com/urfave/cli"
-  version = "1.20.0"
-
 [[override]]
   name = "gopkg.in/fsnotify.v1"
   source = "https://github.com/fsnotify/fsnotify.git"
@@ -52,3 +48,7 @@
 [[constraint]]
   name = "github.com/bmatcuk/doublestar"
   version = "1.1.1"
+
+[[constraint]]
+  name = "github.com/spf13/cobra"
+  version = "1.0.0"
