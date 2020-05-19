@@ -8,8 +8,6 @@
 
 You can **[download latest stable release][releases]** (Windows, Mac, and Linux supported)
 
-[releases]: https://github.com/remove-bg/go/releases
-
 ### Homebrew
 
 ```
@@ -27,6 +25,8 @@ For the latest `deb` package supporting `x86-64` you can also run:
 curl -LO $(curl https://api.github.com/repos/remove-bg/go/releases/latest | grep -o "https://github.com/remove-bg/go/releases/download/.*linux_amd64.deb")
 sudo dpkg -i removebg*.deb
 ```
+
+[releases]: https://github.com/remove-bg/go/releases
 
 ## Usage
 
