@@ -48,6 +48,7 @@ var _ = Describe("Processor", func() {
 			OutputDirectory:            "output-dir",
 			LargeBatchConfirmThreshold: 50,
 			ReprocessExisting:          false,
+			SkipPngFormatOptimization:  false,
 		}
 	})
 
@@ -138,6 +139,19 @@ var _ = Describe("Processor", func() {
 			zipFileName, outputPath := fakeCompositor.ProcessArgsForCall(0)
 			Expect(zipFileName).To(ContainSubstring(".zip"))
 			Expect(outputPath).To(Equal("out-dir/image1.png"))
+		})
+
+		It("allows the optimization to be skipped", func() {
+			inputPaths := []string{"dir/image1.jpg", "dir/image2.jpg"}
+			testSettings.OutputDirectory = "out-dir"
+			testSettings.ImageSettings.Format = processor.FormatPng
+			testSettings.SkipPngFormatOptimization = true
+
+			subject.Process(inputPaths, testSettings)
+
+			Expect(fakeClient.RemoveFromFileCallCount()).To(Equal(2))
+			_, _, params := fakeClient.RemoveFromFileArgsForCall(0)
+			Expect(params["format"]).To(Equal(processor.FormatPng))
 		})
 	})
 
