@@ -26,6 +26,7 @@ type Processor struct {
 type Settings struct {
 	OutputDirectory            string
 	ReprocessExisting          bool
+	SkipPngFormatOptimization  bool
 	LargeBatchConfirmThreshold int
 	ImageSettings              ImageSettings
 }
@@ -64,7 +65,9 @@ func (p Processor) Process(rawInputPaths []string, settings Settings) {
 		return
 	}
 
-	settings.ImageSettings.upgradePngToZipFormat()
+	if !settings.SkipPngFormatOptimization {
+		settings.ImageSettings.upgradePngToZipFormat()
+	}
 
 	totalImages := len(inputPaths)
 

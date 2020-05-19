@@ -12,17 +12,18 @@ import (
 const defaultLargeBatchSize = 50
 
 var (
-	apiKey            string
-	confirmBatchOver  int
-	outputDirectory   string
-	reprocessExisting bool
-	imageSize         string
-	imageType         string
-	imageFormat       string
-	imageChannels     string
-	bgColor           string
-	bgImageFile       string
-	extraApiOptions   string
+	apiKey                    string
+	confirmBatchOver          int
+	outputDirectory           string
+	reprocessExisting         bool
+	skipPngFormatOptimization bool
+	imageSize                 string
+	imageType                 string
+	imageFormat               string
+	imageChannels             string
+	bgColor                   string
+	bgImageFile               string
+	extraApiOptions           string
 )
 
 // RootCmd is the entry point of command-line execution
@@ -44,6 +45,7 @@ var RootCmd = &cobra.Command{
 		s := processor.Settings{
 			OutputDirectory:            outputDirectory,
 			ReprocessExisting:          reprocessExisting,
+			SkipPngFormatOptimization:  skipPngFormatOptimization,
 			LargeBatchConfirmThreshold: confirmBatchOver,
 			ImageSettings: processor.ImageSettings{
 				Size:            imageSize,
@@ -66,6 +68,7 @@ func init() {
 	RootCmd.Flags().StringVar(&apiKey, "api-key", "", "API key (required) or set REMOVE_BG_API_KEY environment variable")
 	RootCmd.Flags().StringVar(&outputDirectory, "output-directory", "", "Output directory")
 	RootCmd.Flags().BoolVar(&reprocessExisting, "reprocess-existing", false, "Reprocess and overwrite any already processed images")
+	RootCmd.Flags().BoolVar(&skipPngFormatOptimization, "skip-png-format-optimization", false, "Skip optimizing PNG format as ZIP to save bandwidth (default false)")
 	RootCmd.Flags().IntVar(&confirmBatchOver, "confirm-batch-over", defaultLargeBatchSize, "Confirm any batches over this size (-1 to disable)")
 	RootCmd.Flags().StringVar(&imageSize, "size", "auto", "Image size")
 	RootCmd.Flags().StringVar(&imageType, "type", "", "Image type")
