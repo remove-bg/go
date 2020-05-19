@@ -8,7 +8,7 @@
 
 You can **[download latest stable release][releases]** (Windows, Mac, and Linux supported)
 
-[releases]: (https://github.com/remove-bg/go/releases)
+[releases]: https://github.com/remove-bg/go/releases
 
 ### Homebrew
 
