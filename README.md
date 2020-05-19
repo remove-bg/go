@@ -33,10 +33,6 @@ Alternatively you can specify the API key per command:
 removebg --api-key xyz images/image1.jpg
 ```
 
-### Resolution limit
-
-Please note that the CLI tool is currently limited to images up to 10 megapixels (larger images are resized). You can get higher-resolution images of up to 25 megapixels via `--format zip` and then converting the ZIP file to the format of your choice (see [here](https://www.remove.bg/api#zip-format)). In the future we plan to extend the CLI tool to compose the final picture automatically.
-
 ### Processing a directory of images
 
 #### Saving to the same directory (default)
