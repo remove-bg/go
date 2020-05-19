@@ -11,7 +11,7 @@ const defaultOutputExtension = ".png"
 func DetermineOutputPath(inputPath string, settings Settings) string {
 	outputDirectory := settings.OutputDirectory
 	inputDirectory, fileName := filepath.Split(inputPath)
-	extentionlessFileName := strings.TrimSuffix(fileName, path.Ext(fileName))
+	extensionlessFileName := strings.TrimSuffix(fileName, path.Ext(fileName))
 	outputExtension := defaultOutputExtension
 
 	if len(settings.ImageSettings.Format) > 0 {
@@ -19,8 +19,8 @@ func DetermineOutputPath(inputPath string, settings Settings) string {
 	}
 
 	if len(outputDirectory) == 0 {
-		return filepath.Join(inputDirectory, extentionlessFileName+"-removebg"+outputExtension)
+		return filepath.Join(inputDirectory, extensionlessFileName+"-removebg"+outputExtension)
 	}
 
-	return filepath.Join(outputDirectory, extentionlessFileName+outputExtension)
+	return filepath.Join(outputDirectory, extensionlessFileName+outputExtension)
 }

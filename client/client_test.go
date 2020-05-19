@@ -65,12 +65,12 @@ var _ = Describe("Client", func() {
 
 	It("attaches a background image file if specified", func() {
 		imageMatcher := newMultipartAttachmentMatcher("image_file", "person-in-field.jpg")
-		bgImagematcher := newMultipartAttachmentMatcher("bg_image_file", "background.jpg")
+		bgImageMatcher := newMultipartAttachmentMatcher("bg_image_file", "background.jpg")
 
 		gock.New("https://api.remove.bg").
 			Post("/v1.0/removebg").
 			SetMatcher(imageMatcher).
-			SetMatcher(bgImagematcher).
+			SetMatcher(bgImageMatcher).
 			Reply(200).
 			BodyString("data")
 

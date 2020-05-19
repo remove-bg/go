@@ -148,7 +148,7 @@ func imageSettingsToParams(imageSettings ImageSettings) map[string]string {
 		values, err := url.ParseQuery(imageSettings.ExtraApiOptions)
 
 		if err == nil {
-			for key, _ := range values {
+			for key := range values {
 				params[key] = values.Get(key)
 			}
 		} else {
