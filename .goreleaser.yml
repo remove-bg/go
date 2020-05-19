@@ -39,3 +39,12 @@ brews:
       name: homebrew-tap
     homepage: "https://www.remove.bg/"
     description: "Remove image background - 100% automatically"
+
+nfpms:
+  -
+    vendor: Kaleido AI GmbH
+    homepage: "https://www.remove.bg/"
+    description: "Remove image background - 100% automatically"
+    formats:
+      - deb
+      - rpm
