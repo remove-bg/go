@@ -1,14 +1,34 @@
-# Go
+# remove.bg CLI
 
 [![CircleCI](https://circleci.com/gh/remove-bg/go.svg?style=shield)](https://circleci.com/gh/remove-bg/go)
 
-## Download
+## Installation
 
-**[Download latest stable release](https://github.com/remove-bg/go/releases)** (Windows, Mac, Linux)
+### Download
 
+You can **[download latest stable release][releases]** (Windows, Mac, and Linux supported)
 
+### Homebrew
 
-## CLI usage
+```
+brew install remove-bg/homebrew-tap/removebg
+```
+
+### deb / rpm
+
+Download the .deb or .rpm from the [releases page][releases] and install with
+`dpkg -i` and `rpm -i`.
+
+For the latest `deb` package supporting `x86-64` you can also run:
+
+```
+curl -LO $(curl https://api.github.com/repos/remove-bg/go/releases/latest | grep -o "https://github.com/remove-bg/go/releases/download/.*linux_amd64.deb")
+sudo dpkg -i removebg*.deb
+```
+
+[releases]: https://github.com/remove-bg/go/releases
+
+## Usage
 
 ```
 removebg [options] <file>...
