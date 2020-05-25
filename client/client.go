@@ -48,9 +48,9 @@ func (c Client) RemoveFromFile(inputPath string, apiKey string, params map[strin
 	if statusCode == 200 {
 		return body, contentType, err
 	} else if statusCode >= 400 && statusCode < 500 {
-		return nil, "", parseJsonErrors(body)
+		return nil, "", parseJsonErrors(statusCode, body)
 	} else {
-		return nil, "", fmt.Errorf("Unable to process image http_status=%d", resp.StatusCode)
+		return nil, "", fmt.Errorf("Unable to process image http_status=%d", statusCode)
 	}
 }
 
@@ -112,7 +112,7 @@ func (c Client) userAgent() string {
 	return fmt.Sprintf("remove-bg-go-%s", c.Version)
 }
 
-func parseJsonErrors(body []byte) error {
+func parseJsonErrors(statusCode int, body []byte) error {
 	parsedErrorResponse := jsonErrorResponse{}
 	err := json.Unmarshal(body, &parsedErrorResponse)
 	if err != nil {
@@ -124,11 +124,29 @@ func parseJsonErrors(body []byte) error {
 		errorMessages[i] = e.Title
 	}
 
-	return errors.New(strings.Join(errorMessages, ", "))
+	message := strings.Join(errorMessages, ", ")
+
+	return &RequestError{
+		StatusCode: statusCode,
+		Err:        errors.New(message),
+	}
 }
 
 type jsonErrorResponse struct {
 	Errors []struct {
 		Title string
 	}
+}
+
+type RequestError struct {
+	StatusCode int
+	Err        error
+}
+
+func (r *RequestError) Error() string {
+	return fmt.Sprintf("%d: %s", r.StatusCode, r.Err.Error())
+}
+
+func (r *RequestError) RateLimitExceeded() bool {
+	return r.StatusCode == 429
 }

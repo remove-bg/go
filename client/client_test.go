@@ -121,7 +121,12 @@ var _ = Describe("Client", func() {
 			result, _, err := subject.RemoveFromFile(fixtureFile, "api-key", map[string]string{})
 
 			Expect(result).To(BeNil())
-			Expect(err).To(MatchError("File too large, Second error"))
+
+			re, ok := err.(*client.RequestError)
+			Expect(ok).To(BeTrue())
+
+			Expect(re.Error()).To(Equal("400: File too large, Second error"))
+			Expect(re.StatusCode).To(Equal(400))
 		})
 	})
 

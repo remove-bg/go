@@ -87,6 +87,11 @@ func (p Processor) Process(rawInputPaths []string, settings Settings) {
 			p.Notifier.Success(inputPath, index+1, totalImages)
 		} else {
 			p.Notifier.Error(err, inputPath, index+1, totalImages)
+
+			clientErr, ok := err.(*client.RequestError)
+			if ok && clientErr.RateLimitExceeded() {
+				return // Halt processing loop
+			}
 		}
 	}
 }

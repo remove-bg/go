@@ -4,6 +4,7 @@ import (
 	"errors"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
+	"github.com/remove-bg/go/client"
 	"github.com/remove-bg/go/client/clientfakes"
 	"github.com/remove-bg/go/composite/compositefakes"
 	"github.com/remove-bg/go/processor"
@@ -217,6 +218,24 @@ var _ = Describe("Processor", func() {
 
 			_, writerArg2 := fakeStorage.WriteArgsForCall(0)
 			Expect(writerArg2).To(Equal([]byte("Processed2")))
+		})
+
+		Context("rate limit exceeded", func() {
+			It("stops processing images", func() {
+				rateLimitedExceeded := client.RequestError{
+					StatusCode: 429,
+					Err:        errors.New("rate limit exceeded"),
+				}
+
+				fakeClient.RemoveFromFileReturnsOnCall(0, nil, "", &rateLimitedExceeded)
+				inputPaths := []string{"dir/image1.jpg", "dir/image2.jpg"}
+
+				subject.Process(inputPaths, testSettings)
+
+				Expect(fakeClient.RemoveFromFileCallCount()).To(Equal(1))
+				Expect(fakeNotifier.ErrorCallCount()).To(Equal(1))
+				Expect(fakeStorage.WriteCallCount()).To(Equal(0))
+			})
 		})
 
 		It("passes the error details to the notifier", func() {
