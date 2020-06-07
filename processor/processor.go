@@ -56,6 +56,11 @@ func NewProcessor(apiKey string, version string) Processor {
 }
 
 func (p Processor) Process(rawInputPaths []string, settings Settings) {
+	err := p.Storage.MkdirP(settings.OutputDirectory)
+	if err != nil {
+		log.Fatal(err)
+	}
+
 	inputPaths, err := p.Storage.ExpandPaths(rawInputPaths)
 	if err != nil {
 		log.Fatal(err)

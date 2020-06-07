@@ -67,6 +67,13 @@ var _ = Describe("Processor", func() {
 		Expect(clientArg1).To(Equal("dir/image1.jpg"))
 	})
 
+	It("create the output directory", func() {
+		subject.Process([]string{"dir/*.jpg"}, testSettings)
+
+		Expect(fakeStorage.MkdirPCallCount()).To(Equal(1))
+		Expect(fakeStorage.MkdirPArgsForCall(0)).To(Equal(testSettings.OutputDirectory))
+	})
+
 	It("coordinates the HTTP request and writing the result", func() {
 		fakeClient.RemoveFromFileReturnsOnCall(0, []byte("Processed1"), mimePng, nil)
 		fakeClient.RemoveFromFileReturnsOnCall(1, []byte("Processed2"), mimePng, nil)

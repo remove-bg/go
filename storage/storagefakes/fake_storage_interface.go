@@ -32,6 +32,17 @@ type FakeStorageInterface struct {
 	fileExistsReturnsOnCall map[int]struct {
 		result1 bool
 	}
+	MkdirPStub        func(string) error
+	mkdirPMutex       sync.RWMutex
+	mkdirPArgsForCall []struct {
+		arg1 string
+	}
+	mkdirPReturns struct {
+		result1 error
+	}
+	mkdirPReturnsOnCall map[int]struct {
+		result1 error
+	}
 	WriteStub        func(string, []byte) error
 	writeMutex       sync.RWMutex
 	writeArgsForCall []struct {
@@ -176,6 +187,66 @@ func (fake *FakeStorageInterface) FileExistsReturnsOnCall(i int, result1 bool) {
 	}{result1}
 }
 
+func (fake *FakeStorageInterface) MkdirP(arg1 string) error {
+	fake.mkdirPMutex.Lock()
+	ret, specificReturn := fake.mkdirPReturnsOnCall[len(fake.mkdirPArgsForCall)]
+	fake.mkdirPArgsForCall = append(fake.mkdirPArgsForCall, struct {
+		arg1 string
+	}{arg1})
+	fake.recordInvocation("MkdirP", []interface{}{arg1})
+	fake.mkdirPMutex.Unlock()
+	if fake.MkdirPStub != nil {
+		return fake.MkdirPStub(arg1)
+	}
+	if specificReturn {
+		return ret.result1
+	}
+	fakeReturns := fake.mkdirPReturns
+	return fakeReturns.result1
+}
+
+func (fake *FakeStorageInterface) MkdirPCallCount() int {
+	fake.mkdirPMutex.RLock()
+	defer fake.mkdirPMutex.RUnlock()
+	return len(fake.mkdirPArgsForCall)
+}
+
+func (fake *FakeStorageInterface) MkdirPCalls(stub func(string) error) {
+	fake.mkdirPMutex.Lock()
+	defer fake.mkdirPMutex.Unlock()
+	fake.MkdirPStub = stub
+}
+
+func (fake *FakeStorageInterface) MkdirPArgsForCall(i int) string {
+	fake.mkdirPMutex.RLock()
+	defer fake.mkdirPMutex.RUnlock()
+	argsForCall := fake.mkdirPArgsForCall[i]
+	return argsForCall.arg1
+}
+
+func (fake *FakeStorageInterface) MkdirPReturns(result1 error) {
+	fake.mkdirPMutex.Lock()
+	defer fake.mkdirPMutex.Unlock()
+	fake.MkdirPStub = nil
+	fake.mkdirPReturns = struct {
+		result1 error
+	}{result1}
+}
+
+func (fake *FakeStorageInterface) MkdirPReturnsOnCall(i int, result1 error) {
+	fake.mkdirPMutex.Lock()
+	defer fake.mkdirPMutex.Unlock()
+	fake.MkdirPStub = nil
+	if fake.mkdirPReturnsOnCall == nil {
+		fake.mkdirPReturnsOnCall = make(map[int]struct {
+			result1 error
+		})
+	}
+	fake.mkdirPReturnsOnCall[i] = struct {
+		result1 error
+	}{result1}
+}
+
 func (fake *FakeStorageInterface) Write(arg1 string, arg2 []byte) error {
 	var arg2Copy []byte
 	if arg2 != nil {
@@ -249,6 +320,8 @@ func (fake *FakeStorageInterface) Invocations() map[string][][]interface{} {
 	defer fake.expandPathsMutex.RUnlock()
 	fake.fileExistsMutex.RLock()
 	defer fake.fileExistsMutex.RUnlock()
+	fake.mkdirPMutex.RLock()
+	defer fake.mkdirPMutex.RUnlock()
 	fake.writeMutex.RLock()
 	defer fake.writeMutex.RUnlock()
 	copiedInvocations := map[string][][]interface{}{}

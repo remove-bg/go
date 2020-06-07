@@ -3,7 +3,8 @@ package storage_test
 import (
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
-
+	"io/ioutil"
+	"os"
 	"path"
 	"runtime"
 
@@ -89,6 +90,29 @@ var _ = Describe("FileStorage", func() {
 				Expect(err).ToNot(HaveOccurred())
 				Expect(expanded).To(Equal(originals))
 			})
+		})
+	})
+
+	Describe("MkdirP", func() {
+		var tmpDir string
+
+		BeforeEach(func() {
+			dir, err := ioutil.TempDir("", "mkdirp-spec")
+			Expect(err).ToNot(HaveOccurred())
+
+			tmpDir = dir
+		})
+
+		AfterEach(func() {
+			os.RemoveAll(tmpDir)
+		})
+
+		It("creates deeply nested directories, if they don't exist", func() {
+			outputDir := path.Join(tmpDir, "nested1/nested2")
+
+			Expect(outputDir).ToNot(BeADirectory())
+			Expect(subject.MkdirP(outputDir)).Should(Succeed())
+			Expect(outputDir).To(BeADirectory())
 		})
 	})
 })

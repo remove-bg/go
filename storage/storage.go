@@ -11,6 +11,7 @@ type StorageInterface interface {
 	Write(path string, data []byte) error
 	FileExists(path string) bool
 	ExpandPaths(originalPaths []string) ([]string, error)
+	MkdirP(path string) error
 }
 
 type FileStorage struct {
@@ -51,4 +52,12 @@ func (FileStorage) ExpandPaths(originalPaths []string) ([]string, error) {
 	}
 
 	return resolvedPaths, nil
+}
+
+func (FileStorage) MkdirP(path string) error {
+	if len(path) == 0 {
+		return nil
+	}
+
+	return os.MkdirAll(path, 0755)
 }
