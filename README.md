@@ -135,6 +135,22 @@ Please see the [API documentation][api-docs] for further details.
 - `--channels`
 - `--bg-color`
 - `--format` (default: `png`)
+- `--extra-api-options` for forwarding any unlisted/new options to the API
+  - Formatted as a URI encoded string (`=` between key/value, delimited with `&`)
+  - e.g. `--extra-api-options 'crop=true&add_shadow=true'`
+
+## Examples
+
+```sh
+# Producing a JPG with a grey background at the path: processed/subject.jpg
+removebg subject.jpg --format jpg --bg-color 7a7a7a --output-directory processed
+
+# Producing a large transparent PNG image up to 25 megapixels
+removebg large.jpg --size full --format png
+
+# Processing a car image with additional API options
+removebg car.jpg --type car --extra-api-options 'add_shadow=true&semitransparency=true'
+```
 
 ## Development
 
