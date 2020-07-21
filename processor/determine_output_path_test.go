@@ -37,7 +37,7 @@ var _ = Describe("DetermineOutputPath", func() {
 			settings := Settings{
 				OutputDirectory: "out",
 				ImageSettings: ImageSettings{
-					Format: "jpg",
+					OutputFormat: "jpg",
 				},
 			}
 

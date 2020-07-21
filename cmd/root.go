@@ -52,7 +52,7 @@ var RootCmd = &cobra.Command{
 				Channels:        imageChannels,
 				BgColor:         bgColor,
 				BgImageFile:     bgImageFile,
-				Format:          strings.ToLower(imageFormat),
+				OutputFormat:    strings.ToLower(imageFormat),
 				ExtraApiOptions: extraApiOptions,
 			},
 		}

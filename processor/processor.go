@@ -37,8 +37,9 @@ type ImageSettings struct {
 	Channels        string
 	BgColor         string
 	BgImageFile     string
-	Format          string
+	OutputFormat    string
 	ExtraApiOptions string
+	transferFormat  string
 }
 
 func NewProcessor(apiKey string, version string) Processor {
@@ -71,9 +72,7 @@ func (p Processor) Process(rawInputPaths []string, settings Settings) {
 		return
 	}
 
-	if !settings.SkipPngFormatOptimization {
-		settings.ImageSettings.upgradePngToZipFormat()
-	}
+	settings.setTransferFormat()
 
 	totalImages := len(inputPaths)
 
@@ -105,11 +104,17 @@ const FormatPng = "png"
 const FormatZip = "zip"
 const MimeZip = "application/zip"
 
-func (is *ImageSettings) upgradePngToZipFormat() {
+func (s *Settings) setTransferFormat() {
 	// Save network bandwidth by requesting ZIP format (output will still be a PNG)
-	if is.Format == FormatPng {
-		is.Format = FormatZip
+	if !s.SkipPngFormatOptimization && s.ImageSettings.OutputFormat == FormatPng {
+		s.ImageSettings.transferFormat = FormatZip
+	} else {
+		s.ImageSettings.transferFormat = s.ImageSettings.OutputFormat
 	}
+}
+
+func (is *ImageSettings) TransferFormat() string {
+	return is.transferFormat
 }
 
 func (p Processor) processFile(inputPath string, outputPath string, imageSettings ImageSettings) error {
@@ -150,8 +155,8 @@ func imageSettingsToParams(imageSettings ImageSettings) map[string]string {
 		params["bg_image_file"] = imageSettings.BgImageFile
 	}
 
-	if len(imageSettings.Format) > 0 {
-		params["format"] = imageSettings.Format
+	if len(imageSettings.TransferFormat()) > 0 {
+		params["format"] = imageSettings.TransferFormat()
 	}
 
 	if len(imageSettings.ExtraApiOptions) > 0 {
