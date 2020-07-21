@@ -104,7 +104,7 @@ var _ = Describe("Processor", func() {
 
 			inputPaths := []string{"dir/image1.jpg", "dir/image2.jpg"}
 			testSettings.OutputDirectory = "out-dir"
-			testSettings.ImageSettings.Format = processor.FormatZip
+			testSettings.ImageSettings.OutputFormat = processor.FormatZip
 
 			subject.Process(inputPaths, testSettings)
 
@@ -126,7 +126,7 @@ var _ = Describe("Processor", func() {
 		It("upgrades the format to zip behind the scenes", func() {
 			inputPaths := []string{"dir/image1.jpg", "dir/image2.jpg"}
 			testSettings.OutputDirectory = "out-dir"
-			testSettings.ImageSettings.Format = processor.FormatPng
+			testSettings.ImageSettings.OutputFormat = processor.FormatPng
 
 			subject.Process(inputPaths, testSettings)
 
@@ -138,7 +138,7 @@ var _ = Describe("Processor", func() {
 		It("delegates to the compositor", func() {
 			inputPaths := []string{"dir/image1.jpg", "dir/image2.jpg"}
 			testSettings.OutputDirectory = "out-dir"
-			testSettings.ImageSettings.Format = processor.FormatPng
+			testSettings.ImageSettings.OutputFormat = processor.FormatPng
 
 			subject.Process(inputPaths, testSettings)
 
@@ -152,7 +152,7 @@ var _ = Describe("Processor", func() {
 		It("allows the optimization to be skipped", func() {
 			inputPaths := []string{"dir/image1.jpg", "dir/image2.jpg"}
 			testSettings.OutputDirectory = "out-dir"
-			testSettings.ImageSettings.Format = processor.FormatPng
+			testSettings.ImageSettings.OutputFormat = processor.FormatPng
 			testSettings.SkipPngFormatOptimization = true
 
 			subject.Process(inputPaths, testSettings)
@@ -160,6 +160,20 @@ var _ = Describe("Processor", func() {
 			Expect(fakeClient.RemoveFromFileCallCount()).To(Equal(2))
 			_, _, params := fakeClient.RemoveFromFileArgsForCall(0)
 			Expect(params["format"]).To(Equal(processor.FormatPng))
+		})
+
+		It("skips processing if the output PNG file exists", func() {
+			testSettings.OutputDirectory = ""
+			testSettings.ImageSettings.OutputFormat = processor.FormatPng
+
+			inputPaths := []string{"dir/image1.jpg"}
+			fakeStorage.FileExistsReturnsOnCall(0, true)
+
+			subject.Process(inputPaths, testSettings)
+
+			Expect(fakeNotifier.SkipCallCount()).To(Equal(1))
+			Expect(fakeClient.RemoveFromFileCallCount()).To(Equal(0))
+			Expect(fakeStorage.FileExistsArgsForCall(0)).To(Equal("dir/image1-removebg.png"))
 		})
 	})
 
@@ -169,12 +183,12 @@ var _ = Describe("Processor", func() {
 			inputPaths := []string{"dir/image1.jpg"}
 
 			testSettings.ImageSettings = processor.ImageSettings{
-				Size:        "size-value",
-				Type:        "type-value",
-				Channels:    "channels-value",
-				BgColor:     "bg-color-value",
-				BgImageFile: "bg-image-file-value",
-				Format:      "format-value",
+				Size:         "size-value",
+				Type:         "type-value",
+				Channels:     "channels-value",
+				BgColor:      "bg-color-value",
+				BgImageFile:  "bg-image-file-value",
+				OutputFormat: "format-value",
 			}
 
 			subject.Process(inputPaths, testSettings)

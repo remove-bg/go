@@ -14,8 +14,8 @@ func DetermineOutputPath(inputPath string, settings Settings) string {
 	extensionlessFileName := strings.TrimSuffix(fileName, path.Ext(fileName))
 	outputExtension := defaultOutputExtension
 
-	if len(settings.ImageSettings.Format) > 0 {
-		outputExtension = "." + settings.ImageSettings.Format
+	if len(settings.ImageSettings.OutputFormat) > 0 {
+		outputExtension = "." + settings.ImageSettings.OutputFormat
 	}
 
 	if len(outputDirectory) == 0 {
