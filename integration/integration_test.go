@@ -1,4 +1,4 @@
-package main_test
+package integration_test
 
 import (
 	"crypto/sha256"
@@ -27,10 +27,10 @@ var _ = Describe("Remove.bg CLI: zip2png command", func() {
 		_, testFile, _, _ := runtime.Caller(0)
 		testDir = path.Dir(testFile)
 
-		exampleZip = path.Join(testDir, "fixtures/zip/example-cat.zip")
+		exampleZip = path.Join(testDir, "../fixtures/zip/example-cat.zip")
 		Expect(exampleZip).To(BeAnExistingFile())
 
-		referencePath = path.Join(testDir, "fixtures/zip/reference-example-cat.png")
+		referencePath = path.Join(testDir, "../fixtures/zip/reference-example-cat.png")
 		Expect(referencePath).To(BeAnExistingFile())
 
 		tmpOutputDir, _ = ioutil.TempDir("", "removeBG-*")
