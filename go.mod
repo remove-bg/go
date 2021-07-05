@@ -3,20 +3,19 @@ module kaleido.ai/go
 go 1.16
 
 require (
-	github.com/bmatcuk/doublestar v1.3.0
-	github.com/fsnotify/fsnotify v1.4.9 // indirect
-	github.com/mattn/go-colorable v0.1.6
-	github.com/onsi/ginkgo v1.12.1
-	github.com/onsi/gomega v1.10.0
+	github.com/bmatcuk/doublestar v1.3.4
+	github.com/joefitzgerald/rainbow-reporter v0.1.0 // indirect
+	github.com/mattn/go-colorable v0.1.8
+	github.com/maxbrunsfeld/counterfeiter/v6 v6.4.1 // indirect
+	github.com/onsi/ginkgo v1.16.4
+	github.com/onsi/gomega v1.13.0
 	github.com/remove-bg/go v1.3.1
-	github.com/sirupsen/logrus v1.6.0
-	github.com/spf13/cobra v1.0.0
-	github.com/spf13/pflag v1.0.5 // indirect
-	golang.org/x/net v0.0.0-20200519113804-d87ec0cfa476 // indirect
-	golang.org/x/sys v0.0.0-20200519105757-fe76b779f299 // indirect
-	golang.org/x/text v0.3.2 // indirect
-	golang.org/x/xerrors v0.0.0-20191204190536-9bdfabe68543 // indirect
+	github.com/sirupsen/logrus v1.8.1
+	github.com/spf13/cobra v1.2.1
+	golang.org/x/sys v0.0.0-20210630005230-0f9fa26af87c // indirect
+	golang.org/x/tools v0.1.4 // indirect
 	gopkg.in/AlecAivazis/survey.v1 v1.8.8
-	gopkg.in/h2non/gock.v1 v1.0.15
-	gopkg.in/yaml.v2 v2.3.0 // indirect
+	gopkg.in/h2non/gock.v1 v1.1.0
 )
+
+replace github.com/remove-bg/go => /Users/brew/Documents/gitrepos/go/src/
