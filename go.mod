@@ -18,4 +18,4 @@ require (
 	gopkg.in/h2non/gock.v1 v1.1.0
 )
 
-replace github.com/remove-bg/go => /Users/brew/Documents/gitrepos/go/src/
+//replace github.com/remove-bg/go => /Users/brew/Documents/gitrepos/go/src/
