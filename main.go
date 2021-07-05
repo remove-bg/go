@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/remove-bg/go/cmd"
+	"./cmd"
 )
 
 var (

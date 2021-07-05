@@ -1,7 +1,7 @@
 package composite
 
 import (
-	"github.com/remove-bg/go/storage"
+	"./storage"
 
 	"archive/zip"
 	"bytes"

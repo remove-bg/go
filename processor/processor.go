@@ -1,10 +1,10 @@
 package processor
 
 import (
+	"../client"
+	"../composite"
+	"../storage"
 	"fmt"
-	"github.com/remove-bg/go/client"
-	"github.com/remove-bg/go/composite"
-	"github.com/remove-bg/go/storage"
 	"io/ioutil"
 	"log"
 	"net/http"

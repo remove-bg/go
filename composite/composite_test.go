@@ -2,13 +2,14 @@ package composite_test
 
 import (
 	"fmt"
-	. "github.com/onsi/ginkgo"
-	"github.com/onsi/ginkgo/config"
-	. "github.com/onsi/gomega"
-	"github.com/remove-bg/go/composite"
 	"os"
 	"path"
 	"runtime"
+
+	"./composite"
+	. "github.com/onsi/ginkgo"
+	"github.com/onsi/ginkgo/config"
+	. "github.com/onsi/gomega"
 )
 
 var _ = Describe("Composite", func() {

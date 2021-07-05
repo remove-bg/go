@@ -4,7 +4,7 @@ package storagefakes
 import (
 	"sync"
 
-	"github.com/remove-bg/go/storage"
+	".."
 )
 
 type FakeStorageInterface struct {

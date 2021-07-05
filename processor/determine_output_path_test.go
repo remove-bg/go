@@ -4,7 +4,7 @@ import (
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 
-	. "github.com/remove-bg/go/processor"
+	. "."
 )
 
 var _ = Describe("DetermineOutputPath", func() {

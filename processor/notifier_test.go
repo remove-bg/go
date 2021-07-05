@@ -7,7 +7,7 @@ import (
 	"errors"
 	"github.com/sirupsen/logrus/hooks/test"
 
-	. "github.com/remove-bg/go/processor"
+	. "."
 )
 
 var _ = Describe("Notifier", func() {

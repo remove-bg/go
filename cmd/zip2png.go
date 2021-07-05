@@ -1,7 +1,7 @@
 package cmd
 
 import (
-	"github.com/remove-bg/go/composite"
+	"./composite"
 	"github.com/spf13/cobra"
 	"log"
 )

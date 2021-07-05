@@ -4,7 +4,7 @@ package processorfakes
 import (
 	"sync"
 
-	"github.com/remove-bg/go/processor"
+	".."
 )
 
 type FakePromptInterface struct {
