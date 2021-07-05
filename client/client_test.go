@@ -1,10 +1,10 @@
 package client_test
 
 import (
+	"../client"
 	"fmt"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
-	"github.com/remove-bg/go/client"
 	"gopkg.in/h2non/gock.v1"
 	"net/http"
 	"path"

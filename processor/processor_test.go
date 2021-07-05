@@ -1,15 +1,15 @@
 package processor_test
 
 import (
+	"../client"
+	"../client/clientfakes"
+	"../composite/compositefakes"
+	"../processor"
+	"../processor/processorfakes"
+	"../storage/storagefakes"
 	"errors"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
-	"github.com/remove-bg/go/client"
-	"github.com/remove-bg/go/client/clientfakes"
-	"github.com/remove-bg/go/composite/compositefakes"
-	"github.com/remove-bg/go/processor"
-	"github.com/remove-bg/go/processor/processorfakes"
-	"github.com/remove-bg/go/storage/storagefakes"
 )
 
 const mimePng = "image/png"

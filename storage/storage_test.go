@@ -8,7 +8,7 @@ import (
 	"path"
 	"runtime"
 
-	. "github.com/remove-bg/go/storage"
+	. "."
 )
 
 var _ = Describe("FileStorage", func() {

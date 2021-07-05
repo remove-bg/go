@@ -4,7 +4,7 @@ package compositefakes
 import (
 	"sync"
 
-	"github.com/remove-bg/go/composite"
+	".."
 )
 
 type FakeCompositorInterface struct {

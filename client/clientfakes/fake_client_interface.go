@@ -4,7 +4,7 @@ package clientfakes
 import (
 	"sync"
 
-	"github.com/remove-bg/go/client"
+	".."
 )
 
 type FakeClientInterface struct {

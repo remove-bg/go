@@ -1,9 +1,9 @@
 package cmd
 
 import (
+	"./processor"
 	"errors"
 	"fmt"
-	"github.com/remove-bg/go/processor"
 	"github.com/spf13/cobra"
 	"os"
 	"strings"
