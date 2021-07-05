@@ -3,7 +3,7 @@ version: 2
 jobs:
   build:
     docker:
-      - image: circleci/golang:1.14
+      - image: circleci/golang:1.16.5
     working_directory: /go/src/github.com/remove-bg/go
     steps:
       - checkout
