@@ -2,7 +2,7 @@
 
 set -euox pipefail
 
-dep ensure
+go get ./...
 
 go get -u github.com/onsi/ginkgo/ginkgo
 go get -u github.com/maxbrunsfeld/counterfeiter/v6
