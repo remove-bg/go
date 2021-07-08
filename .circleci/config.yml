@@ -17,6 +17,9 @@ jobs:
           key: vendor-{{ checksum "Gopkg.lock" }}
           paths:
             - vendor
+      - run: go build -o removebg
+      - store_artifacts:
+          path: ./removebg
 
 workflows:
   version: 2
