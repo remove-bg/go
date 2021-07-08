@@ -3,7 +3,9 @@ module kaleido.ai/go
 go 1.16
 
 require (
+	github.com/4kills/go-zlib v1.1.0 // indirect
 	github.com/bmatcuk/doublestar v1.3.4
+	github.com/foobaz/lossypng v0.0.0-20200814224715-48fa8819852a // indirect
 	github.com/joefitzgerald/rainbow-reporter v0.1.0 // indirect
 	github.com/mattn/go-colorable v0.1.8
 	github.com/maxbrunsfeld/counterfeiter/v6 v6.4.1 // indirect

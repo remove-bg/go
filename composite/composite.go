@@ -1,6 +1,7 @@
 package composite
 
 import (
+	"github.com/foobaz/lossypng/lossypng"
 	"github.com/remove-bg/go/storage"
 
 	"archive/zip"
@@ -48,9 +49,13 @@ func (c Compositor) Process(inputZipPath string, outputImagePath string) error {
 	return nil
 }
 
-func (c Compositor) savePng(image *image.NRGBA, outputPath string) {
+func (c Compositor) savePng(image image.Image, outputPath string) {
+	compressedImage := lossypng.Compress(image, lossypng.NoConversion, 30)
 	buf := new(bytes.Buffer)
-	png.Encode(buf, image)
+	enc := &png.Encoder{
+		CompressionLevel: png.BestCompression,
+	}
+	enc.Encode(buf, compressedImage)
 	c.Storage.Write(outputPath, buf.Bytes())
 }
 
