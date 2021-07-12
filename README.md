@@ -5,7 +5,7 @@
 Run the test locally. Workflows cannot be run locally!
 
 ```
-circleci local execute --job test
+bin/test
 ```
 
 ## Installation
