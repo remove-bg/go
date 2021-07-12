@@ -19,5 +19,3 @@ require (
 	gopkg.in/AlecAivazis/survey.v1 v1.8.8
 	gopkg.in/h2non/gock.v1 v1.1.0
 )
-
-//replace github.com/remove-bg/go => /Users/brew/Documents/gitrepos/go/src/
