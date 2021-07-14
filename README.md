@@ -2,6 +2,12 @@
 
 [![CircleCI](https://circleci.com/gh/remove-bg/go.svg?style=shield)](https://circleci.com/gh/remove-bg/go)
 
+Run the test locally. Workflows cannot be run locally!
+
+```
+circleci local execute --job test
+```
+
 ## Installation
 
 ### Download
