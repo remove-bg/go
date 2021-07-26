@@ -1,8 +1,9 @@
 package composite
 
 import (
+	"os"
+
 	"github.com/remove-bg/go/storage"
-	"github.com/xyproto/imagelib"
 
 	"archive/zip"
 	"fmt"
@@ -43,13 +44,17 @@ func (c Compositor) Process(inputZipPath string, outputImagePath string) error {
 
 	composited := composite(rgb, alpha)
 
-	c.savePng(composited, outputImagePath)
+	return c.savePng(composited, outputImagePath)
 
-	return nil
-}
 
-func (c Compositor) savePng(image image.Image, outputPath string) {
-	imagelib.Write(outputPath, image)
+func (c Compositor) savePng(image image.Image, outputPath string) error {
+	f, err := os.Create(filename)
+	if err != nil {
+		return err
+	}
+	defer f.Close()
+
+	png.Encode(f, image)
 }
 
 const zipColorImageFileName = "color.jpg"
