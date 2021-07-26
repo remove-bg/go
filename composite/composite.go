@@ -1,10 +1,11 @@
 package composite
 
 import (
+	"os"
+
 	"github.com/remove-bg/go/storage"
 
 	"archive/zip"
-	"bytes"
 	"fmt"
 	"image"
 	"image/color"
@@ -43,15 +44,19 @@ func (c Compositor) Process(inputZipPath string, outputImagePath string) error {
 
 	composited := composite(rgb, alpha)
 
-	c.savePng(composited, outputImagePath)
-
-	return nil
+	return c.savePng(composited, outputImagePath)
 }
 
-func (c Compositor) savePng(image *image.NRGBA, outputPath string) {
-	buf := new(bytes.Buffer)
-	png.Encode(buf, image)
-	c.Storage.Write(outputPath, buf.Bytes())
+func (c Compositor) savePng(image image.Image, outputPath string) error {
+	f, err := os.Create(outputPath)
+	if err != nil {
+		return err
+	}
+	defer f.Close()
+
+	png.Encode(f, image)
+
+	return nil
 }
 
 const zipColorImageFileName = "color.jpg"

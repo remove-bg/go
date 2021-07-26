@@ -2,6 +2,8 @@
 
 [![CircleCI](https://circleci.com/gh/remove-bg/go.svg?style=shield)](https://circleci.com/gh/remove-bg/go)
 
+
+
 ## Installation
 
 ### Download
@@ -173,6 +175,12 @@ To build & try out locally:
 ```
 go build -o removebg main.go
 ./removebg --help
+```
+
+To run the test locally use this command
+
+```
+bin/test
 ```
 
 ### Releasing a new version
