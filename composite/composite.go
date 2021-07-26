@@ -1,11 +1,10 @@
 package composite
 
 import (
-	"github.com/foobaz/lossypng/lossypng"
 	"github.com/remove-bg/go/storage"
+	"github.com/xyproto/imagelib"
 
 	"archive/zip"
-	"bytes"
 	"fmt"
 	"image"
 	"image/color"
@@ -50,13 +49,7 @@ func (c Compositor) Process(inputZipPath string, outputImagePath string) error {
 }
 
 func (c Compositor) savePng(image image.Image, outputPath string) {
-	compressedImage := lossypng.Compress(image, lossypng.NoConversion, 30)
-	buf := new(bytes.Buffer)
-	enc := &png.Encoder{
-		CompressionLevel: png.BestCompression,
-	}
-	enc.Encode(buf, compressedImage)
-	c.Storage.Write(outputPath, buf.Bytes())
+	imagelib.WritePNG(image, outputPath)
 }
 
 const zipColorImageFileName = "color.jpg"
