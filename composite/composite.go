@@ -49,7 +49,7 @@ func (c Compositor) Process(inputZipPath string, outputImagePath string) error {
 }
 
 func (c Compositor) savePng(image image.Image, outputPath string) {
-	imagelib.WritePNG(image, outputPath)
+	imagelib.Write(outputPath, image)
 }
 
 const zipColorImageFileName = "color.jpg"
