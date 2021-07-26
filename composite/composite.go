@@ -45,16 +45,18 @@ func (c Compositor) Process(inputZipPath string, outputImagePath string) error {
 	composited := composite(rgb, alpha)
 
 	return c.savePng(composited, outputImagePath)
-
+}
 
 func (c Compositor) savePng(image image.Image, outputPath string) error {
-	f, err := os.Create(filename)
+	f, err := os.Create(outputPath)
 	if err != nil {
 		return err
 	}
 	defer f.Close()
 
 	png.Encode(f, image)
+
+	return nil
 }
 
 const zipColorImageFileName = "color.jpg"
