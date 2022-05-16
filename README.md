@@ -1,27 +1,27 @@
 # remove.bg CLI 2.0
 
+⚠️ _This repository is archived! Please read the message below._ 
+
 We released a new version of the remove.bg CLI. You can download it here: https://github.com/remove-bg/remove-bg-cli
 The go version of our CLI is no longer maintained nor supported.
 
 ---
 
-# remove.bg CLI
+## remove.bg CLI
 
-[![CircleCI](https://circleci.com/gh/remove-bg/go.svg?style=shield)](https://circleci.com/gh/remove-bg/go)
+### Installation
 
-## Installation
-
-### Download
+#### Download
 
 You can **[download latest stable release][releases]** (Windows, Mac, and Linux supported)
 
-### Homebrew
+#### Homebrew
 
 ```
 brew install remove-bg/homebrew-tap/removebg
 ```
 
-### deb / rpm
+#### deb / rpm
 
 Download the .deb or .rpm from the [releases page][releases] and install with
 `dpkg -i` and `rpm -i`.
@@ -35,13 +35,13 @@ sudo dpkg -i removebg*.deb
 
 [releases]: https://github.com/remove-bg/go/releases
 
-## Usage
+### Usage
 
 ```
 removebg [options] <file>...
 ```
 
-### API key
+#### API key
 
 To process images you'll need your [remove.bg API key][api-key].
 
@@ -89,7 +89,7 @@ images/
 └── cat-removebg.png
 ```
 
-#### Saving to a different directory (`--output-directory`)
+##### Saving to a different directory (`--output-directory`)
 
 If you want to remove the background from all the PNG and JPG images in a
 directory, and save the transparent images in a different directory:
@@ -119,7 +119,7 @@ processed/
 └── cat.png
 ```
 
-### CLI options
+#### CLI options
 
 - `--api-key` or `REMOVE_BG_API_KEY` environment variable (required).
 
@@ -131,7 +131,7 @@ by default to save credits. Specify this flag to force reprocessing.
 - `--confirm-batch-over` (default `50`) - Prompt for confirmation before
 processing batches over this size. Specify `-1` to disable this safeguard.
 
-#### Image processing options
+##### Image processing options
 
 Please see the [API documentation][api-docs] for further details.
 
@@ -146,7 +146,7 @@ Please see the [API documentation][api-docs] for further details.
   - Formatted as a URI encoded string (`=` between key/value, delimited with `&`)
   - e.g. `--extra-api-options 'crop=true&add_shadow=true'`
 
-## Examples
+### Examples
 
 ```sh
 # Producing a JPG with a grey background at the path: processed/subject.jpg
@@ -159,7 +159,7 @@ removebg large.jpg --size full --format png
 removebg car.jpg --type car --extra-api-options 'add_shadow=true&semitransparency=true'
 ```
 
-## Development
+### Development
 
 Prerequisites:
 
@@ -182,7 +182,7 @@ go build -o removebg main.go
 ./removebg --help
 ```
 
-### Releasing a new version
+#### Releasing a new version
 
 - Install [goreleaser](https://goreleaser.com/install/)
 - [Create a Github token](https://github.com/settings/tokens/new) with repo access
