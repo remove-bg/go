@@ -1,3 +1,10 @@
+# remove.bg CLI 2.0
+
+We released a new version of the remove.bg CLI. You can download it here: https://github.com/remove-bg/remove-bg-cli
+The go version of our CLI is no longer maintained nor supported.
+
+---
+
 # remove.bg CLI
 
 [![CircleCI](https://circleci.com/gh/remove-bg/go.svg?style=shield)](https://circleci.com/gh/remove-bg/go)
